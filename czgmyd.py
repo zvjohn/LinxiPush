@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-24 12:51
+# update: 2023-08-25 7:30
 # 充值购买阅读(钢镚阅读)
 # 1.新增手动验证文章
 # 2.升级推送助手(实时检测阅读回调)
@@ -86,7 +86,7 @@ def read():
                 if biz in ['3923296810','3933296470','3895583124','3877697845','3599816852','3889696883','3258705834','3895583125']:
                     print(f"获取到检测文章,已推送到微信 30s")
                     # 过检测
-                    check = test(biz,response["data"]["link"])
+                    check = test(response["data"]["link"])
                     if check == True:
                         print("检测文章-过检测成功啦!")
                         response = ss.post("http://2477726.9o.10r8cvn6b1.cloud/read/finish", headers=headers, data=get_sign()).json()
@@ -138,7 +138,7 @@ def get_money():
         print(f"错误未知{response}")
 
 
-def test(biz,link):
+def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
     WxSend("微信阅读-钢镚阅读", "检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
