@@ -138,7 +138,6 @@ def do_read(uk):
                     if r_result['errcode'] == 0:
                         print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
                     else:
-                        print(f"阅读失败,获取到未收录检测BIZ:{biz}")
                         print(r_result)
                         break
                 else:
@@ -150,6 +149,7 @@ def do_read(uk):
                 if r_result['errcode'] == 0:
                     print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
                 else:
+                    print(f"阅读失败,获取到未收录检测BIZ:{biz}")
                     print(r_result)
                     break
         else:
