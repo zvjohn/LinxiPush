@@ -1,7 +1,11 @@
-# Author: lindaye
-# update: 2023-08-20 18:31
+# Author: linxi
+# update: 2023-08-25 19:00
 # 从零开始阅读
 # 入口: https://entry-1318684421.cos.ap-nanjing.myqcloud.com/cos_b.html?openId=oiDdr5xiVUIwNQVvj1sADz2rb5Mg
+# 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
+# 1.关注测试号 2.修改wxname微信昵称 3.替换authtoken为抓包的authtoken
+# V0.1(测试版)
+
 
 import requests
 from Crypto.Cipher import AES
@@ -9,6 +13,15 @@ import base64
 import random
 import re
 import time
+
+# 推送域名
+tsurl = 'https://linxi-send.run.goorm.app'
+# 临时用户名
+temp_user = ''
+# 微信昵称
+wxname = 'XX'
+# 保持连接,重复利用
+ss = requests.session()
 # 抓包获取Cookie中的authtoken替换###
 authtoken = '###'
 
@@ -28,63 +41,119 @@ def aes_encrypt(data):
 
 def get_readhome():
     url = 'https://sss.mvvv.fun/app/enter/read_home'
-    result = requests.get(url,headers=headers).json()
+    result = ss.get(url,headers=headers).json()
     if result['code'] == 0:
         url = "http://" + re.findall('//(.*?)/',result['data']['location'])[0]
         get_read(url)
     else:
         print("获取阅读域名失败!")
-        get_read("http://5x034gb8z4.qqaas.fun")
+        get_read("http://hmqulo7g9p.qqaas.fun")
 
 
 def get_read(url):
-    result = requests.get(url+"/app/user/myPickInfo",headers=headers).json()['data']
-    # print(result)
-    data = aes_encrypt(f'{{"moneyPick":{result["goldNow"]}}}')
-    result = requests.post(url+"/app/user/pickAuto",headers=headers,json=data).json()
-    print(f"兑换结果: {result['msg']}")
-    result = requests.get(url+"/app/user/myInfo",headers=headers).json()['data']
-    print(f"用户: {result['nameNick']} 今日已读: {result['completeTodayCount']}篇  获得积分: {result['completeTodayGold']}")
-    if result['remainSec'] == 0:
-        print ('当前是读文章的状态')#line:93
-        get_myinfo(url)
-    else :#line:94
-        ttime =int (result['remainSec'] /60 )#line:95
-        print ('当前不是是读文章的状态,距离下次阅读还有',ttime ,'分钟')#line:96
+    result = ss.get(url+"/app/user/myPickInfo",headers=headers).json()
+    if result['code'] == 401:
+        print(f"账号异常:{result['msg']}")
+    else:
+        data = aes_encrypt(f'{{"moneyPick":{result["data"]["goldNow"]}}}')
+        result = ss.post(url+"/app/user/pickAuto",headers=headers,json=data).json()
+        print(f"兑换结果: {result['msg']}")
+        result = ss.get(url+"/app/user/myInfo",headers=headers).json()['data']
+        print(f"用户: {result['nameNick']} 今日已读: {result['completeTodayCount']}篇  获得积分: {result['completeTodayGold']}")
+        global temp_user
+        temp_user = result['nameNick']
+        if result['remainSec'] == 0:
+            print ('当前是读文章的状态')#line:93
+            get_myinfo(url)
+        else :#line:94
+            ttime =int (result['remainSec'] /60 )#line:95
+            print ('当前不是是读文章的状态,距离下次阅读还有',ttime ,'分钟')#line:96
     
     
 def get_myinfo(url):
-    result = requests.get(url+"/app/read/get",headers=headers).json()['data']['location']
+    result = ss.get(url+"/app/read/get",headers=headers).json()['data']['location']
     u = re.findall(r'u=([^&]+)',result)[0]
     print(f"获取到KEY: {u}")
-    result = requests.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
-    if (result['bizCode']) !=0 or (result['taskKey'] == None):
-        print('文章正在更新中。请稍后重试。')
+    do_read(u)
+
+
+def do_read(u):
+    result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
+    if result['bizCode'] !=0:
+        tips = {20:'文章正在补充中，稍后再试',30:'下批文章将在24小时后到来',10:'下批文章将在60分钟后到达',11:'当天达到上限'}
+        print(tips[result['bizCode']])
     else:
-        print(f"阅读任务ID: {result['taskKey']}")
-        s = random.randint (10 ,15 )
+        taskKey = result['taskKey']
+        print(f"阅读任务ID: {taskKey}")
+        s = random.randint (10 ,12 )
         print(f"随机阅读 {s} 秒")
         time.sleep(s)
-        do_read(u,result['taskKey'])
+        read_check = False
+        while True:
+            if read_check == False:
+                url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
+                result = ss.get(url,headers=headers).json()['data']
+                print(result)
+                if result['bizCode'] == 0:
+                    read_check = False
+                    print(f"阅读结果: {result['detail']}")
+                    taskKey = result['taskKey']
+                    print(f"阅读任务ID: {taskKey}")
+                    s = random.randint (10 ,12 )
+                    print(f"随机阅读 {s} 秒")
+                    time.sleep(s)
+                elif (result['bizCode'] == 31) and (result['detail'] == "检测中"):
+                    read_check = True
+                    print(f"获取到检测文章,已推送到微信 30s")
+                else:
+                    print(f"任务刷爆了: {result}")
+                    break
+            else:
+                # 过检测
+                result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
+                check = test(result['taskUrl'])
+                if check == True:
+                    print("检测文章-过检测成功啦!")
+                    taskKey = result['taskKey']
+                    print(f"阅读任务ID: {taskKey}")
+                    s = random.randint (9 ,10 )
+                    print(f"随机阅读 {s} 秒")
+                    time.sleep(s)
+                else:
+                    print("检测文章-过检测失败啦!")
+                    break
 
 
-def do_read(u,taskKey):
+def test(link):
+    result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
+    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
+    check = ''
     for i in range(30):
-        url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
-        result = requests.get(url,headers=headers).json()['data']
-        if result['bizCode'] == 0:
-            print(f"阅读结果: {result['detail']}")
-            if result['detail'] == "检测中":
-                print("遇到检测文章,重新阅读")
-                result = requests.get(url,headers=headers).json()['data']
-            taskKey = result['taskKey']
-            print(f"阅读任务ID: {taskKey}")
-            s = random.randint (20 ,30 )
-            print(f"随机阅读 {s} 秒")
-            time.sleep(s)
-        else:
-            print(f"任务刷爆了: {result['detail']}")
+        result = ss.get(tsurl+"/back/"+temp_user).json()
+        if result['status'] == True:
+            check = True 
             break
+        else:
+            print("等待检测中...", end="\r", flush=True)
+        time.sleep(1)
+    if result['status'] == False:
+        print("手动检测超时,验证失败!")
+        check = False 
+    return check
 
+
+# 微信推送
+def WxSend(project, status, content,turl):
+    data = {
+        "name": wxname, # 微信昵称
+        "project": project,
+        "status": status,
+        "content": content,
+        "url":turl
+    }
+    result = ss.post(tsurl, json=data).json()
+    print(f"微信消息推送: {result['msg']}")
+    if result['msg'] != "消息推送成功!":
+        print(f"请手动完成验证吧: {turl}")
 
 get_readhome()
