@@ -124,7 +124,8 @@ def do_read(uk):
         if result['errcode'] == 0:
             link = result['data']['link']
             l_result = ss.get(link,headers=headers).text
-            biz = re.findall("biz=(.*?)&mid",l_result)[0]
+            # 获取biz
+            biz = re.findall("biz=(.*?)&amp;",l_result)[0]
             s = random.randint(6,8)
             print (f'获取文章成功,本次模拟读{s}秒')
             if biz in check_list:
@@ -189,7 +190,7 @@ def WxSend(project, status, content,turl):
     }
     result = ss.post(tsurl, json=data).json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] == "林夕推送助手: 微信API每日调用已上限!":
+    if result['msg'] != "消息推送成功!":
         print(f"请手动完成验证吧: {turl}")
 
 
