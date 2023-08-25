@@ -16,7 +16,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; RMX3461 Build/RKQ1.210503.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5223 MMWEBSDK/20230701 MMWEBID/7925 MicroMessenger/8.0.40.2420(0x28002851) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64',
     'Cookie':'',
 }
-
+wxname = "##"#微信昵称
 data = {"un":"##","token":"##","pageSize":20}
 
 
@@ -24,7 +24,7 @@ data = {"un":"##","token":"##","pageSize":20}
 def WxSend(project, status, content,turl):
     url = "https://linxi-send.run.goorm.app/"
     data = {
-        "name": "林夕", # 微信昵称
+        "name": wxname, # 微信昵称
         "project": project,
         "status": status,
         "content": content,
