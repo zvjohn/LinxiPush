@@ -11,6 +11,9 @@ import requests
 import re
 import time
 
+# Cookie填这
+data = {"un":"##","token":"##","pageSize":20}
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; RMX3461 Build/RKQ1.210503.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5223 MMWEBSDK/20230701 MMWEBID/7925 MicroMessenger/8.0.40.2420(0x28002851) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64',
     'Cookie':'',
@@ -21,16 +24,15 @@ tsurl = 'https://linxi-send.run.goorm.app'
 temp_user = ''
 # 微信昵称
 wxname = "XX"
-# Cookie填这
-data = {"un":"##","token":"##","pageSize":20}
-
+# 保持连接,重复使用
+ss = requests.session()
 
 def test(link):
-    result = requests.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
+    result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
     WxSend(f"微信阅读-{ydname}阅读", f"{temp_user}-检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
-        result = requests.get(tsurl+"/back/"+temp_user).json()
+        result = ss.get(tsurl+"/back/"+temp_user).json()
         if result['status'] == True:
             check = True 
             break
@@ -51,15 +53,15 @@ def WxSend(project, status, content,turl):
         "content": content,
         "url":turl
     }
-    result = requests.post(tsurl, json=data).json()
+    result = ss.post(tsurl, json=data).json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] != "消息推送成功!":
+    if result['msg'] == "林夕推送助手: 微信API每日调用已上限!":
         print(f"请手动完成验证吧: {tsurl}")
 
 
 def user():
     url = domain +'/info'
-    result = requests.post(url,headers=headers,json=data).json()['result']
+    result = ss.post(url,headers=headers,json=data).json()['result']
     print(f"{ydname}账号: {result['uid']} 今日已读: {result['dayCount']} 今日积分:{result['moneyCurrent']}")
     global temp_user
     temp_user = result['uid']
@@ -72,7 +74,7 @@ def user():
 
 def read():
     while True:
-        result = requests.post(domain +'/read',headers=headers,json=data).json()
+        result = ss.post(domain +'/read',headers=headers,json=data).json()
         if result['code'] == 0:
             if result["result"]["status"] == 10:
                 biz=''.join(re.findall('__biz=(.+)&mid',result["result"]["url"]))
@@ -81,7 +83,7 @@ def read():
                     check = test(result["result"]["url"])
                     if check == True:
                         print("检测文章-过检测成功啦!")
-                        result = requests.post(domain +'/submit',headers=headers,json=data).json()
+                        result = ss.post(domain +'/submit',headers=headers,json=data).json()
                         print(result)
                     else:
                         print("检测文章-过检测失败啦!")
@@ -89,7 +91,7 @@ def read():
                 else:
                     print(f"开始阅读文章-{biz}-阅读时间 6s")
                     time.sleep(6)
-                    result = requests.post(domain +'/submit',headers=headers,json=data).json()["result"]
+                    result = ss.post(domain +'/submit',headers=headers,json=data).json()["result"]
                     print(f"阅读成功: 积分{result['val']} 剩余{result['progress']}篇")  
             else:
                 tips = {30:'重新运行尝试一下',40:'文章还没有准备好',50:'阅读失效,黑号了',60:'已经全部阅读完了',70:'下一轮还未开启',}
@@ -115,7 +117,7 @@ def get_money(max_money):
     else:
         t = "/wdmoney"
     T_data = {"val":str(int(max_money*10000)),"un":data['un'],"token":data['token'],"pageSize":20}
-    response = requests.post(domain+t, headers=headers, json=T_data).json()
+    response = ss.post(domain+t, headers=headers, json=T_data).json()
     if response['code'] == 0:
         print(f"提现成功: {max_money}元")
     else:
