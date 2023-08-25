@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-25 7:00
+# update: 2023-08-25 19:00
 # 1.修复提现
 # 2.新增多账户
 # 3.新增100篇推送信息
@@ -8,7 +8,7 @@
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 入口: https://fia.douyifang.top:10263/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=fia.douyifang.top:10263&codeuserid=2&time=1692525245
 # 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信测试号 3.填写微信昵称
-# V1.4(测试版)
+# V1.1.4(正式版)
 
 import requests
 import re
