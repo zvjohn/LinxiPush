@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-25 7:30
+# update: 2023-08-25 19:30
 # 充值购买阅读(钢镚阅读)
 # 1.新增手动验证文章
 # 2.升级推送助手(实时检测阅读回调)
@@ -9,7 +9,7 @@
 # 入口: http://2496831.ikbiwrbnf.bmaw.t7267ekl7p.cloud/?p=2496831
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 使用方法: 1.填写cookie_list的值(可以全Cookie也可以"gfsessionid=xxxxx") 2.扫码关注微信测试号 3.修改微信昵称
-# V1.4(最终版)
+# V1.1.4(正式版)
 
 import re
 import time
@@ -167,7 +167,7 @@ def WxSend(project, status, content,turl):
     }
     result = ss.post(tsurl, json=data).json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] == "林夕推送助手: 微信API每日调用已上限!":
+    if result['msg'] != "消息推送成功!":
         print(f"请手动完成验证吧: {turl}")
 
 for cookie in cookie_list:
