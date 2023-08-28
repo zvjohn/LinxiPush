@@ -5,11 +5,11 @@
 > ```python
 > import requests
 > import urllib.parse
-> UID = 'xx' # 获取UID 扫码获取 https://wxpusher.zjiecode.com/demo/
+> wxname = 'xx' # 获取UID 扫码获取 https://wxpusher.zjiecode.com/demo/
 > # 微信推送
 > def WxSend(project, status, content,turl):
 >     turl = urllib.parse.quote(turl)
->     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{UID}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
+>     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
 >     print(f"微信消息推送: {result['msg']}")
 > 
 > WxSend("微信阅读-小阅阅读", f"检测文章", "请在60s内阅读当前文章","http://baidu.com")
