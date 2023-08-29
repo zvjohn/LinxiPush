@@ -1,19 +1,21 @@
 # Author: linxi
-# update: 2023-08-29 7:00
+# update: 2023-08-29 16:00
 # 从零开始阅读
 # 入口: https://entry-1318684421.cos.ap-nanjing.myqcloud.com/cos_b.html?openId=oiDdr5xiVUIwNQVvj1sADz2rb5Mg
-# 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
-# 1.关注测试号 2.修改wxname微信昵称 3.替换authtoken为抓包的authtoken
-# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# 1.关注Wxpusher 2.修改Wxpusher微信UID 3.替换authtoken为抓包的authtoken
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# V0.1.1(测试版)
+# V0.1.2(测试版)
 
 
 import requests
+#加密
 from Crypto.Cipher import AES
 import base64
+# 随机值
 import random
+# 正则匹配
 import re
+# 时间
 import time
 import urllib.parse
 
@@ -21,17 +23,34 @@ import urllib.parse
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ''
-# 微信昵称
+# 微信UID
 wxname = 'XX'
 # 保持连接,重复利用
 ss = requests.session()
-# 抓包获取Cookie中的authtoken替换###
-authtoken = '###'
+# 抓包
+authtoken = "xxx"
+
 
 headers = {
     'Cookie': f'authtoken={authtoken}; snapshot=0',
     'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380'
 }
+
+checkDict=[
+'Mzg4MDU1MTc0NA==',
+'MzU5MDc0NjU4Mg==',
+'MzA3Njk1NzAyNA==',
+'MzI2ODcwOTQzMg==',
+'MzU5ODU0MzM4Mg==',
+'Mzg2OTcwOTQzNQ==',
+'MzI0NTgyOTYxOQ==',
+'MzI3MTY2OTYyNA==',
+'MjM5NTY1OTI0MQ==',
+'MzU3ODEyNTgyNQ==',
+'MzkyNDIxMzE4OA==',
+'MzI1NjY4Njc0Mw==',
+]
+
 
 def aes_encrypt(data):
     block_size = AES.block_size  # 获取AES块大小
@@ -86,53 +105,51 @@ def do_read(u):
         tips = {20:'文章正在补充中，稍后再试',30:'下批文章将在24小时后到来',10:'下批文章将在60分钟后到达',11:'当天达到上限'}
         print(tips[result['bizCode']])
     else:
-        taskKey = result['taskKey']
-        print(f"阅读任务ID: {taskKey}")
-        s = random.randint (10 ,12 )
-        print(f"随机阅读 {s} 秒")
-        time.sleep(s)
-        read_check = False
+        check_num = 0
         while True:
-            if read_check == False:
-                url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
-                result = ss.get(url,headers=headers).json()['data']
-                print(result)
-                if result['bizCode'] == 0:
-                    read_check = False
-                    print(f"阅读结果: {result['detail']}")
-                    taskKey = result['taskKey']
-                    print(f"阅读任务ID: {taskKey}")
-                    s = random.randint (10 ,12 )
-                    print(f"随机阅读 {s} 秒")
-                    time.sleep(s)
-                elif (result['bizCode'] == 31) and (result['detail'] == "检测中"):
-                    read_check = True
-                    print(f"获取到检测文章,已推送到微信 60s")
+            if check_num <= 1:
+                taskKey = result['taskKey']
+                taskUrl = result['taskUrl']
+                # 获取biz
+                biz = re.findall("biz=(.*?)&amp;",ss.get(taskUrl).text)[0]
+                print(f"阅读任务ID({biz}): {taskKey}")
+                s = random.randint (10 ,12 )
+                print(f"随机阅读 {s} 秒")
+                if biz in checkDict:
+                    check_num += 1
+                    print("阅读文章检测-已推送至微信,请60s内完成验证!")
+                    check = test(biz,result['taskUrl'])
+                    if check == True:
+                        print("检测文章-过检测成功啦!")
+                        time.sleep(5)
+                        url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
+                        result = ss.get(url,headers=headers).json()['data']
+                        if result['bizCode'] == 0:
+                            print(f"阅读结果: {result['detail']}")
+                        else:
+                            print(f"阅读失败: {result}")
+                    else:
+                        print("检测文章-过检测失败啦!")
+                        break
                 else:
-                    print(f"任务刷爆了: {result}")
-                    break
+                    time.sleep(s)
+                    url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
+                    result = ss.get(url,headers=headers).json()['data']
+                    if result['bizCode'] == 0:
+                        print(f"阅读结果: {result['detail']}")
+                    else:
+                        print(f"阅读失败: {result}")
             else:
-                # 过检测
-                result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
-                check = test(result['taskUrl'])
-                if check == True:
-                    print("检测文章-过检测成功啦!")
-                    taskKey = result['taskKey']
-                    print(f"阅读任务ID: {taskKey}")
-                    s = random.randint (9 ,10 )
-                    print(f"随机阅读 {s} 秒")
-                    time.sleep(s)
-                else:
-                    print("检测文章-过检测失败啦!")
-                    break
+                print("获取到多次检测文章-已自动停止防止黑号,请手动去处理!")
+                break
 
 
-def test(link):
-    result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
+def test(biz,link):
+    result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
+    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+temp_user).json()
+        result = ss.get(tsurl+"/back/"+temp_user+biz).json()
         if result['status'] == True:
             check = True 
             break
@@ -144,10 +161,12 @@ def test(link):
         check = False 
     return check
 
-# 微信推送(备用)
+
+# 微信推送
 def WxSend(project, status, content,turl):
     turl = urllib.parse.quote(turl)
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
+    print(f"手动检测链接: {turl}")
 
 get_readhome()
