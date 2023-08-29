@@ -6,7 +6,7 @@
 # 3.新增多账户
 # 4.修复推送助手
 # 5.优化脚本
-# 入口: http://2496831.ikbiwrbnf.bmaw.t7267ekl7p.cloud/?p=2496831
+# 入口: http://2496831.zpf7swrv.bnpgkgzod0b9.cloud/?p=2496831
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 使用方法: 1.填写cookie_list的值(可以全Cookie也可以"gfsessionid=xxxxx") 2.扫码关注微信测试号 3.修改微信昵称
 # 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
