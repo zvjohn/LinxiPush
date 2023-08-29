@@ -106,7 +106,7 @@ def do_read(u):
                     time.sleep(s)
                 elif (result['bizCode'] == 31) and (result['detail'] == "检测中"):
                     read_check = True
-                    print(f"获取到检测文章,已推送到微信 30s")
+                    print(f"获取到检测文章,已推送到微信 60s")
                 else:
                     print(f"任务刷爆了: {result}")
                     break
@@ -128,7 +128,7 @@ def do_read(u):
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
+    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -137,7 +137,7 @@ def test(link):
             break
         else:
             print("等待检测中...", end="\r", flush=True)
-        time.sleep(1)
+        time.sleep(2)
     if result['status'] == False:
         print("手动检测超时,验证失败!")
         check = False 
