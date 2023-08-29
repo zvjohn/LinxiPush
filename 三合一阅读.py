@@ -1,10 +1,8 @@
 # Author: lindaye
-# update: 2023-08-29 7:00
+# update: 2023-08-29 16:00
 # http://mr1692750884645.aidhtjj.cn/coin/index.html?mid=CR42F6WUF 【元宝阅读】
 # http://mr1692750916083.dsxanvq.cn/ox/index.html?mid=RG7UUSYFS 【星空阅读】
 # http://mr1692750963995.stijhqm.cn/user/index.html?mid=D33C7W3A3 【花花阅读】
-# 关注微信测试号(不关注无法推送检测文章): https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
-# 使用方法: 1.关注测试号 2.修改wxname的微信昵称 3.将cookie填写到data
 # 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
 # Version:V0.5
@@ -25,7 +23,7 @@ headers = {
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ''
-# 微信昵称
+# WxpusherUID
 wxname = "XX"
 # 保持连接,重复使用
 ss = requests.session()
