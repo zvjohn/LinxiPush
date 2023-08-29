@@ -128,6 +128,7 @@ def WxSend(project, status, content,turl):
     turl = urllib.parse.quote(turl)
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
+    print(f"手动检测链接: {turl}")
 
 
 
