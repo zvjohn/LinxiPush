@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-29 16:00
+# update: 2023-08-29 17:00
 # 充值购买阅读(钢镚阅读)
 # 入口: http://2496831.zpf7swrv.bnpgkgzod0b9.cloud/?p=2496831
 # 使用方法: 1.填写cookie_list的值(可以全Cookie也可以"gfsessionid=xxxxx") 2.扫码关注Wxpusher 3.修改Wxpusher微信UID
