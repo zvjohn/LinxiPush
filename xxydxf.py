@@ -4,6 +4,7 @@
 # 2.新增多账户
 # 3.新增100篇推送信息
 # 4.优化代码
+# 5.单次防黑
 # 小小阅读
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 入口: https://wi76147.oneq.top:10262/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=wi76147.oneq.top:10262&codeuserid=2&time=1693268772
@@ -123,6 +124,7 @@ def get_Key():
     do_read(uk[0])
 
 def do_read(uk):
+    check_num = 0
     while True:
         result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}').json()
         if result['errcode'] == 0:
@@ -131,47 +133,53 @@ def do_read(uk):
             # 获取biz
             biz = re.findall("biz=(.*?)&amp;",l_result)[0]
             s = random.randint(6,8)
-            print (f'获取文章成功,本次模拟读{s}秒')
-            if biz in check_list:
-                print("阅读文章检测-已推送至微信,请60s内完成验证!")
-                link = re.findall('_g.msg_link = "(.*?)";',l_result)[0]
-                # 过检测
-                check = test(link)
-                if check == True:
+            print (f'获取文章成功-{biz}-本次模拟读{s}秒')
+            if check_num <= 1:
+                if biz in check_list:
+                    print("阅读文章检测-已推送至微信,请60s内完成验证!")
+                    check_num += 1
+                    link = re.findall('_g.msg_link = "(.*?)";',l_result)[0]
+                    print(f"获取到微信文章: {link}")
+                    # 过检测
+                    check = test(biz,link)
+                    if check == True:
+                        print("检测文章-过检测成功啦!")
+                        time.sleep(s)
+                        r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
+                        if r_result['errcode'] == 0:
+                            print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
+                        else:
+                            print(r_result)
+                            break
+                    else:
+                        print("检测文章-过检测失败啦!")
+                        break
+                else:
                     time.sleep(s)
-                    print("检测文章-过检测成功啦!")
                     r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
                     if r_result['errcode'] == 0:
                         print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
                     else:
+                        print(f"阅读失败,获取到未收录检测BIZ:{biz}")
                         print(r_result)
                         break
-                else:
-                    print("检测文章-过检测失败啦!")
-                    break
             else:
-                time.sleep(s)
-                r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
-                if r_result['errcode'] == 0:
-                    print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
-                else:
-                    print(f"阅读失败,获取到未收录检测BIZ:{biz}")
-                    print(r_result)
-                    break
+                print("获取到多次检测文章-已自动停止防止黑号,请手动去处理!")
+                break
         else:
-            if result['msg'] == "任务重复":
-                print("阅读失败: 阅读重复重新获取文章")
+            if result['msg'] == "任务重复" or result['msg'] == "任务超时":
+                print(f"阅读失败: {result['msg']}重新获取文章")
             else:
                 print (f"阅读提醒: {result['msg']}")
                 break
 
 
-def test(link):
-    result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-小阅阅读", "检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
+def test(biz,link):
+    result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
+    WxSend("微信阅读-小阅阅读", f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+temp_user).json()
+        result = ss.get(tsurl+"/back/"+temp_user+biz).json()
         if result['status'] == True:
             check = True 
             break
@@ -184,11 +192,14 @@ def test(link):
     return check
 
 
+
+
 # 微信推送
 def WxSend(project, status, content,turl):
     turl = urllib.parse.quote(turl)
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
+    print(f"手动检测链接: {turl}")
 
 
 print(f"=================获取到{len(uid_list)}个账号==================")
