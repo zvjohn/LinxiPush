@@ -1,17 +1,10 @@
 # Author: lindaye
 # update: 2023-08-29 16:00
-# 1.修复提现
-# 2.新增多账户
-# 3.新增100篇推送信息
-# 4.优化代码
-# 5.单次防黑
 # 小小阅读
-# 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 入口: https://wi76147.oneq.top:10262/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=wi76147.oneq.top:10262&codeuserid=2&time=1693268772
-# 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信测试号 3.填写微信昵称
-# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信Wxpusher 3.填写Wxpusher微信UID
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# V1.1.5(正式版)
+# V1.1.6(正式版)
 
 import requests
 import re
@@ -25,7 +18,7 @@ ss = requests.session()
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ""
-# 微信昵称
+# Wxpusher微信UID
 wxname = 'XX'
 # 仅填写uid_list内容即可(抓包获取Cookie中的ysm_uid的值填入##)
 # 单账号 uid_list = ['##']
