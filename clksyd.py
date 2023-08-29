@@ -15,6 +15,7 @@ import base64
 import random
 import re
 import time
+import urllib.parse
 
 # 推送域名
 tsurl = 'https://linxi-send.run.goorm.app'
