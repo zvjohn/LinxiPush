@@ -16,6 +16,7 @@ import requests
 import re
 import time
 import random
+import urllib.parse
 
 # 保持连接,重复利用
 ss = requests.session()
