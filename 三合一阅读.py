@@ -12,6 +12,7 @@
 import requests
 import re
 import time
+import urllib.parse
 
 # Cookie填这
 data = {"un":"##","token":"##","pageSize":20}
