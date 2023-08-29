@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-25 19:00
+# update: 2023-08-29 7:00
 # 1.修复提现
 # 2.新增多账户
 # 3.新增100篇推送信息
@@ -8,7 +8,9 @@
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 入口: https://fia.douyifang.top:10263/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=fia.douyifang.top:10263&codeuserid=2&time=1692525245
 # 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信测试号 3.填写微信昵称
-# V1.1.4(正式版)
+# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
+# V1.1.5(正式版)
 
 import requests
 import re
@@ -44,6 +46,7 @@ check_list = [
     "MzIzMDczODg4Mw==",
     "Mzg5ODUyMzYzMQ==",
     "MzU0NzI5Mjc4OQ==",
+    "Mzg5MDgxODAzMg==",
 ]
 
 headers = {
@@ -129,11 +132,12 @@ def do_read(uk):
             s = random.randint(6,8)
             print (f'获取文章成功,本次模拟读{s}秒')
             if biz in check_list:
-                print("阅读文章检测--100篇检测---已推送至微信")
+                print("阅读文章检测-已推送至微信,请60s内完成验证!")
                 link = re.findall('_g.msg_link = "(.*?)";',l_result)[0]
                 # 过检测
                 check = test(link)
                 if check == True:
+                    time.sleep(s)
                     print("检测文章-过检测成功啦!")
                     r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
                     if r_result['errcode'] == 0:
@@ -163,7 +167,7 @@ def do_read(uk):
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-小阅阅读", "检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
+    WxSend("微信阅读-小阅阅读", "检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -172,7 +176,7 @@ def test(link):
             break
         else:
             print("等待检测中...", end="\r", flush=True)
-        time.sleep(1)
+        time.sleep(2)
     if result['status'] == False:
         print("手动检测超时,验证失败!")
         check = False 
@@ -181,17 +185,9 @@ def test(link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    data = {
-        "name": wxname, # 微信昵称
-        "project": project,
-        "status": status,
-        "content": content,
-        "url":turl
-    }
-    result = ss.post(tsurl, json=data).json()
+    turl = urllib.parse.quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] != "消息推送成功!":
-        print(f"请手动完成验证吧: {turl}")
 
 
 print(f"=================获取到{len(uid_list)}个账号==================")
