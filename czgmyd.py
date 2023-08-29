@@ -19,7 +19,7 @@ import hashlib
 import random
 import requests
 import base64
-
+import urllib.parse
 
 # 抓包获取Cookie完全填入cookie替换###
 cookie_list = ["##","##"]
