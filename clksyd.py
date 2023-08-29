@@ -1,10 +1,12 @@
 # Author: linxi
-# update: 2023-08-25 19:00
+# update: 2023-08-29 7:00
 # 从零开始阅读
 # 入口: https://entry-1318684421.cos.ap-nanjing.myqcloud.com/cos_b.html?openId=oiDdr5xiVUIwNQVvj1sADz2rb5Mg
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 1.关注测试号 2.修改wxname微信昵称 3.替换authtoken为抓包的authtoken
-# V0.1(测试版)
+# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
+# V0.1.1(测试版)
 
 
 import requests
@@ -141,19 +143,10 @@ def test(link):
         check = False 
     return check
 
-
-# 微信推送
+# 微信推送(备用)
 def WxSend(project, status, content,turl):
-    data = {
-        "name": wxname, # 微信昵称
-        "project": project,
-        "status": status,
-        "content": content,
-        "url":turl
-    }
-    result = ss.post(tsurl, json=data).json()
+    turl = urllib.parse.quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] != "消息推送成功!":
-        print(f"请手动完成验证吧: {turl}")
 
 get_readhome()
