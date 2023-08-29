@@ -1,11 +1,13 @@
 # Author: lindaye
-# update: 2023-08-25 19:00
+# update: 2023-08-29 7:00
 # http://mr1692750884645.aidhtjj.cn/coin/index.html?mid=CR42F6WUF 【元宝阅读】
 # http://mr1692750916083.dsxanvq.cn/ox/index.html?mid=RG7UUSYFS 【星空阅读】
 # http://mr1692750963995.stijhqm.cn/user/index.html?mid=D33C7W3A3 【花花阅读】
 # 关注微信测试号(不关注无法推送检测文章): https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 使用方法: 1.关注测试号 2.修改wxname的微信昵称 3.将cookie填写到data
-# Version:V0.4
+# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
+# Version:V0.5
 
 import requests
 import re
@@ -29,7 +31,7 @@ ss = requests.session()
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend(f"微信阅读-{ydname}阅读", f"{temp_user}-检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
+    WxSend(f"微信阅读-{ydname}阅读", f"{temp_user}-检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -38,7 +40,7 @@ def test(link):
             break
         else:
             print("等待检测中...", end="\r", flush=True)
-        time.sleep(1)
+        time.sleep(2)
     if result['status'] == False:
         print("手动检测超时,验证失败!")
         check = False 
@@ -46,17 +48,9 @@ def test(link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    data = {
-        "name": wxname, # 微信昵称
-        "project": project,
-        "status": status,
-        "content": content,
-        "url":turl
-    }
-    result = ss.post(tsurl, json=data).json()
+    turl = urllib.parse.quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] != "消息推送成功!":
-        print(f"请手动完成验证吧: {tsurl}")
 
 
 def user():
@@ -79,10 +73,11 @@ def read():
             if result["result"]["status"] == 10:
                 biz=''.join(re.findall('__biz=(.+)&mid',result["result"]["url"]))
                 if biz in ['Mzg2Mzk3Mjk5NQ==']:
-                    print("检测文章: 请在30秒内完成当前文章")
+                    print("检测文章: 请在60秒内完成当前文章")
                     check = test(result["result"]["url"])
                     if check == True:
                         print("检测文章-过检测成功啦!")
+                        time.sleep(5)
                         result = ss.post(domain +'/submit',headers=headers,json=data).json()
                         print(result)
                     else:
