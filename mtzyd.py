@@ -1,9 +1,9 @@
 # Author: lindaye
-# update: 2023-08-29 13:00
-# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# update: 2023-08-29 16:00
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
 # 入口: http://tg.1693268703.api.mengmorwpt2.cn/h5_share/ads/tg?user_id=124922
 # V0.1
+
 import time
 import requests
 import random
@@ -29,7 +29,7 @@ ss = requests.session()
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ""
-# wxpusher的UID
+# wxpusher微信UID
 wxname = ''
 
 def user(name):
