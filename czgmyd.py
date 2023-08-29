@@ -1,5 +1,5 @@
 # Author: lindaye
-# update: 2023-08-25 19:30
+# update: 2023-08-29 7:00
 # 充值购买阅读(钢镚阅读)
 # 1.新增手动验证文章
 # 2.升级推送助手(实时检测阅读回调)
@@ -9,7 +9,9 @@
 # 入口: http://2496831.ikbiwrbnf.bmaw.t7267ekl7p.cloud/?p=2496831
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
 # 使用方法: 1.填写cookie_list的值(可以全Cookie也可以"gfsessionid=xxxxx") 2.扫码关注微信测试号 3.修改微信昵称
-# V1.1.4(正式版)
+# 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
+# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
+# V1.1.5(正式版)
 
 import re
 import time
@@ -84,10 +86,11 @@ def read():
                 biz = base64.b64decode(biz[0]).decode('utf-8')
                 print(f"获取文章成功---{biz}---阅读时间{s}")
                 if biz in ['3923296810','3933296470','3895583124','3877697845','3599816852','3889696883','3258705834','3895583125']:
-                    print(f"获取到检测文章,已推送到微信 30s")
+                    print(f"获取到检测文章,已推送到微信 60s")
                     # 过检测
                     check = test(response["data"]["link"])
                     if check == True:
+                        time.sleep(s)
                         print("检测文章-过检测成功啦!")
                         response = ss.post("http://2477726.9o.10r8cvn6b1.cloud/read/finish", headers=headers, data=get_sign()).json()
                         if response["code"] == 0:
@@ -140,7 +143,7 @@ def get_money():
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-钢镚阅读", "检测文章", "请在30秒内完成当前文章",tsurl+"/read/"+temp_user)
+    WxSend("微信阅读-钢镚阅读", "检测文章", "请在60秒内完成当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -149,7 +152,7 @@ def test(link):
             break
         else:
             print("等待检测中...", end="\r", flush=True)
-        time.sleep(1)
+        time.sleep(2)
     if result['status'] == False:
         print("手动检测超时,验证失败!")
         check = False 
@@ -158,17 +161,9 @@ def test(link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    data = {
-        "name": wxname, # 微信昵称
-        "project": project,
-        "status": status,
-        "content": content,
-        "url":turl
-    }
-    result = ss.post(tsurl, json=data).json()
+    turl = urllib.parse.quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    if result['msg'] != "消息推送成功!":
-        print(f"请手动完成验证吧: {turl}")
 
 for cookie in cookie_list:
     headers["Cookie"]=cookie
