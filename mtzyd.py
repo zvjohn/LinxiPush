@@ -70,7 +70,7 @@ def do_read():
                         biz = re.findall("biz=(.*?)&amp;",ss.get(data['url']).text)[0]
                     print(f"获取阅读文章成功({biz}): 模拟阅读{s}秒")
                     if biz in checkDict:
-                        check = test(data['url'])
+                        check = test(biz,data['url'])
                         if check:
                             print("检测文章-过检测成功啦!")
                             time.sleep(s)
@@ -105,12 +105,12 @@ def get_money():
         print(f"提现失败: {result['message']}")
 
 
-def test(link):
-    result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-美添赚", f"检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user)
+def test(biz,link):
+    result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
+    WxSend("微信阅读-美添赚", f"检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+temp_user).json()
+        result = ss.get(tsurl+"/back/"+temp_user+biz).json()
         if result['status'] == True:
             check = True 
             break
