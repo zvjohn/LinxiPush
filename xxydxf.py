@@ -6,7 +6,7 @@
 # 4.优化代码
 # 小小阅读
 # 微信测试号: https://s1.ax1x.com/2023/08/23/pPJ5bnA.png
-# 入口: https://fia.douyifang.top:10263/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=fia.douyifang.top:10263&codeuserid=2&time=1692525245
+# 入口: https://wi76147.oneq.top:10262/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=wi76147.oneq.top:10262&codeuserid=2&time=1693268772
 # 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信测试号 3.填写微信昵称
 # 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
