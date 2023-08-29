@@ -1,8 +1,9 @@
 # Author: lindaye
-# update: 2023-08-29 7:00
+# update: 2023-08-29 13:00
 # 更新: 1.添加wxpusher备用推送,替换林夕微信推送助手V1.0,无上限人数限制 2.林夕微信推送助手V1.0(关注人数达到上限,老用户不受影响) 
 # wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
 # 入口: http://tg.1693268703.api.mengmorwpt2.cn/h5_share/ads/tg?user_id=124922
+# V0.1
 import time
 import requests
 import random
@@ -28,14 +29,13 @@ ss = requests.session()
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ""
-# 微信昵称
+# wxpusher的UID
 wxname = ''
-
 
 def user(name):
     result = ss.post('http://api.mengmorwpt1.cn/h5_share/user/info',headers=headers,json={"openid":0}).json()
     if result['code'] == 200:
-        print(f'当前账号: {result["data"]["nickname"]} 积分: {result["data"]["points"]}')
+        print(f'当前账号: {result["data"]["nickname"]} 当前积分: {result["data"]["points"]-result["data"]["used_points"]}')
     else:
         print(f"获取账号异常,请检查{name}的Authorization是否正确!")
         exit()
@@ -61,8 +61,13 @@ def do_read():
                 data = [item for item in result['data'] if 'url' in item]
                 if data != []:
                     data = data[0]                
-                    s = random.randint(6,7)
-                    biz = re.findall("biz=(.*?)&mid",data['url'])[0]
+                    s = random.randint(6,10)
+                    biz = re.findall("biz=(.*?)&mid",data['url'])
+                    if biz != []:
+                        biz = biz[0]
+                    else:
+                        print(f"该文章没有biz:{data['url']}")
+                        biz = re.findall("biz=(.*?)&amp;",ss.get(data['url']).text)[0]
                     print(f"获取阅读文章成功({biz}): 模拟阅读{s}秒")
                     if biz in checkDict:
                         check = test(data['url'])
@@ -86,7 +91,7 @@ def do_read():
                         print(f"本轮阅读异常错误: {t_result}")
                         break
             else:
-                print(f"获取阅读任务错误: {t_result}")
+                print(f"获取阅读任务错误: {result}")
                 break
     else:
         print(f"获取阅读链接失败: {result['message']}")
@@ -102,7 +107,7 @@ def get_money():
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend("微信阅读-美添赚", f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user)
+    WxSend("微信阅读-美添赚", f"检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -125,6 +130,7 @@ def WxSend(project, status, content,turl):
     print(f"微信消息推送: {result['msg']}")
 
 
+
 for i in CKList:
     headers['Authorization'] = i['Authorization']
     temp_user =  i['Authorization']
@@ -132,3 +138,4 @@ for i in CKList:
     sign_in()
     do_read()
     get_money()
+    user(i['name'])
