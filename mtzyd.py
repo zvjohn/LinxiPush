@@ -1,36 +1,36 @@
 # Author: lindaye
-# update: 2023-08-29 16:00
-# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# 入口: http://tg.1693268703.api.mengmorwpt2.cn/h5_share/ads/tg?user_id=124922
-# V0.1
+# V1.1.6
+# 2023.8.30更新:
+#   1.改为变量ck,一行一个ck示例
+#   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+# Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+# 变量名 mtztoken 示例: {"name": "备注", "ck":"这里是Authorization中share:login:后面的值","ts":"这里是Wxpusher获取UID"}
+# 美添赚入口：http://tg.1693387334.api.mengmorwpt2.cn/h5_share/ads/tg?user_id=124922
 
 import time
 import requests
 import random
 import re
-import urllib.parse
+import os
+from urllib.parse import unquote,quote
 
 checkDict = {
-    "MzkzNjI3NDAwOA==": ["木新领袋管家", "gh_04e096463e91"],
+    "MzkzNjI3NDAwOA==",
 }
 
-CKList = [
-    {"name": "备注", "Authorization": "XXX"}
-]
+ck_token = [eval(line) for line in os.getenv('mtztoken').strip().split('\n')]
+ss = requests.session()
+# 推送域名
+tsurl = 'https://linxi-send.run.goorm.app'
+# 临时用户名
+temp_user = ""
+WxpusherUid = ''
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue',
     'content-type': 'application/json',
     'Referer': 'http://71692693186.tt.bendishenghuochwl1.cn/',
 }
-
-ss = requests.session()
-# 推送域名
-tsurl = 'https://linxi-send.run.goorm.app'
-# 临时用户名
-temp_user = ""
-# wxpusher微信UID
-wxname = ''
 
 def user(name):
     result = ss.post('http://api.mengmorwpt1.cn/h5_share/user/info',headers=headers,json={"openid":0}).json()
@@ -125,16 +125,17 @@ def test(biz,link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = urllib.parse.quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
+    turl = quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {turl}")
+    print(f"手动检测链接: {unquote(turl)}")
 
 
-
-for i in CKList:
-    headers['Authorization'] = i['Authorization']
-    temp_user =  i['Authorization']
+for i in ck_token:
+    print(f"============当前第{ck_token.index(i)+1}个账户============")
+    headers['Authorization'] = f"share:login:{i['ck']}"
+    temp_user =  i['ck']
+    WxpusherUid = i["ts"]
     user(i['name'])
     sign_in()
     do_read()
