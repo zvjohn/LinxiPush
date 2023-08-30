@@ -1,33 +1,24 @@
 # Author: lindaye
-# update: 2023-08-29 16:00
-# 小小阅读
-# 入口: https://wi76147.oneq.top:10262/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=wi76147.oneq.top:10262&codeuserid=2&time=1693268772
-# 使用教程: 1.填入uid_list值(仅需ysm_uid=后的内容) 2.扫码关注微信Wxpusher 3.填写Wxpusher微信UID
-# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# V1.1.6(正式版)
+# V1.1.6
+# 2023.8.30更新:
+#   1.改为变量ck,一行一个ck示例
+#   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+# Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+# 变量名 xyytoken 示例: {"ck":"这里是cookie中ysm_uid的值","ts":"这里是Wxpusher获取UID"}
 
 import requests
 import re
 import time
 import random
-import urllib.parse
+import os
+from urllib.parse import unquote,quote
 
-# 保持连接,重复利用
-ss = requests.session()
-# 推送域名
-tsurl = 'https://linxi-send.run.goorm.app'
-# 临时用户名
-temp_user = ""
-# Wxpusher微信UID
-wxname = 'XX'
-# 仅填写uid_list内容即可(抓包获取Cookie中的ysm_uid的值填入##)
-# 单账号 uid_list = ['##']
-# 多账号 uid_list = ['##','##']
-uid_list = ['##','##']
+ck_token = [eval(line) for line in os.getenv('xyytoken').strip().split('\n')]
 
-ysm_uid = ''
+headers = {
+    'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380'
+}
 
-# 检测文章列表
 check_list = [
     "MzkxNTE3MzQ4MQ==",
     "Mzg5MjM0MDEwNw==",
@@ -44,11 +35,15 @@ check_list = [
     "Mzg5MDgxODAzMg==",
 ]
 
-headers = {
-    'Cookie': '',
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue'
-}
 
+# 保持连接,重复利用
+ss = requests.session()
+# 推送域名
+tsurl = 'https://linxi-send.run.goorm.app'
+# 临时ck
+ysm_uid= ''
+# 微信昵称
+WxpusherUid = ''
 
 def ts ():
     return str (int (time .time ()))+'000'
@@ -59,6 +54,7 @@ def signin():
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
     if signid == []:
         print ('初始化失败,账号异常')
+        exit()
     else:
         print ('初始化成功,账号登陆成功!')
         return signid
@@ -131,7 +127,6 @@ def do_read(uk):
                 if biz in check_list:
                     print("阅读文章检测-已推送至微信,请60s内完成验证!")
                     check_num += 1
-                    link = re.findall('_g.msg_link = "(.*?)";',l_result)[0]
                     print(f"获取到微信文章: {link}")
                     # 过检测
                     check = test(biz,link)
@@ -167,12 +162,12 @@ def do_read(uk):
                 break
 
 
-def test(biz,link):
-    result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
-    WxSend("微信阅读-小阅阅读", f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
+def test(link):
+    result = ss.post(tsurl+"/task",json={"biz":"xyy"+ysm_uid,"url":link}).json()
+    WxSend("微信阅读-小阅阅读", f"{ysm_uid}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+"xyy"+ysm_uid)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+temp_user+biz).json()
+        result = ss.get(tsurl+"/back/"+"xyy"+ysm_uid).json()
         if result['status'] == True:
             check = True 
             break
@@ -189,18 +184,17 @@ def test(biz,link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = urllib.parse.quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
+    turl = quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {turl}")
+    print(f"手动检测链接: {unquote(turl)}")
 
 
-print(f"=================获取到{len(uid_list)}个账号==================")
-for id in range(len(uid_list)):
-    print(f"当前为第{id+1}个账号")
-    ysm_uid = uid_list[id]
-    temp_user = ysm_uid
-    headers['Cookie'] = f'ysm_uid={ysm_uid}'
+for i in ck_token:
+    print(f"============当前第{ck_token.index(i)+1}个账户============")
+    headers['Cookie'] = f"ysm_uid={i['ck']}"
+    ysm_uid = i['ck']
+    WxpusherUid = i['ts']
     signid = signin()
     user_info()
     hasWechat()
