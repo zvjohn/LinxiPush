@@ -1,37 +1,34 @@
 # Author: lindaye
-# update: 2023-08-29 17:00
-# 充值购买阅读(钢镚阅读)
-# 入口: http://2496831.zpf7swrv.bnpgkgzod0b9.cloud/?p=2496831
-# 使用方法: 1.填写cookie_list的值(可以全Cookie也可以"gfsessionid=xxxxx") 2.扫码关注Wxpusher 3.修改Wxpusher微信UID
-# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# V1.1.6(正式版)
+# V1.1.7
+# 2023.8.30更新:
+#   1.改为变量ck,(多账号)一行一个ck示例
+#   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+# Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+# 变量名 gbtoken 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是Wxpusher获取UID"}
+
 
 import re
 import time
 import hashlib
 import random
 import requests
-import base64
-import urllib.parse
+import os
+from urllib.parse import unquote,quote
 
-# 抓包获取Cookie完全填入cookie替换###
-cookie_list = ["##","##"]
-# Wxpusher微信UID
-wxname = 'XX'
-
-
+ck_token = [eval(line) for line in os.getenv('gbtoken').strip().split('\n')]
+# 检测列表
+check_list = ['MzkyMzI5NjgxMA==', 'MzkzMzI5NjQ3MA==', 'Mzg5NTU4MzEyNQ==', 'Mzg3NzY5Nzg0NQ==', 'MzU5OTgxNjg1Mg==', 'Mzg4OTY5Njg4Mw==', 'MzI1ODcwNTgzNA==']
+# 推送WxpusherUid
+WxpusherUid = ''
 # 推送域名
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ''
 # 保持连接,重复利用
 ss = requests.session()
-
 headers = {
     "User-Agent": "Mozilla/5.0 (Linux; Android 9; V1923A Build/PQ3B.190801.06161913; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/5635 MicroMessenger/8.0.40.2420(0x28002837) WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64",
-    "Cookie": "",
 }
-
 
 def get_sign():
     current_time = str(int(time.time()))
@@ -43,13 +40,13 @@ def get_sign():
     return data
 
 def home():
-    url = "http://2477726.neavbkz.jweiyshi.r0ffky3twj.cloud/share"
+    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/share"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     share_link = response["data"]["share_link"][0]
     p_value = share_link.split("=")[1].split("&")[0]
     global temp_user
     temp_user = p_value
-    url = "http://2477726.neavbkz.jweiyshi.r0ffky3twj.cloud/read/info"
+    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/info"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     if response["code"] == 0:
         remain = response["data"]["remain"]
@@ -60,7 +57,7 @@ def home():
 
 
 def read():
-    check_num = 0
+    check_status = False
     while True:
         url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/task"
         response = ss.get(url, headers=headers, data=get_sign()).json()
@@ -79,16 +76,16 @@ def read():
                 biz = re.findall("biz=(.*?)&",response["data"]["link"])[0]
                 print(f"获取文章成功---{biz}---阅读时间{s}")
                 if biz in check_list:
-                    if check_num <= 1:
+                    if check_status == False:
                         print(f"获取到检测文章,已推送到微信,请60s内完成验证!")
-                        check_num += 1
+                        check_status = True
                         # 过检测
                         check = test(biz,response["data"]["link"])
                         if check == True:
                             print("检测文章-过检测成功啦!")
                             time.sleep(s)
-                            response = ss.post("http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/finish", headers=headers, data=get_sign()).json()  
-                            print(f"阅读文章: {response}")
+                            response = ss.post("http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/finish", headers=headers, data=get_sign()).json()
+                            print(response)
                         else:
                             print("检测文章-过检测失败啦!")
                             break
@@ -156,14 +153,16 @@ def test(biz,link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = urllib.parse.quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
+    turl = quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {turl}")
+    print(f"手动检测链接: {unquote(turl)}")
 
 
-for cookie in cookie_list:
-    headers["Cookie"]=cookie
+for i in ck_token:
+    print(f"============当前第{ck_token.index(i)+1}个账户============")
+    headers['Cookie'] = f"gfsessionid={i['ck']};"
+    WxpusherUid = i['ts']
     home()
     read()
     get_money()
