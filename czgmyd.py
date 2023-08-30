@@ -3,6 +3,7 @@
 # 2023.8.30更新:
 #   1.改为变量ck,(多账号)一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+# 钢镚阅读入口: http://2496831.x1kuoc6e.i6xcln7mgi97.cloud/?p=2496831
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 # 变量名 gbtoken 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是Wxpusher获取UID"}
 
