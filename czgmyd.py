@@ -17,7 +17,7 @@ import os
 from urllib.parse import unquote,quote
 
 
-if os.getenv('cltoken') == None:
+if os.getenv('gbtoken') == None:
     print("Ck异常: 请至少填写一个账号ck!")
     exit()
 ck_token = [eval(line) for line in os.getenv('gbtoken').strip().split('\n')]
