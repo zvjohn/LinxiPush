@@ -1,13 +1,13 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.31 14:00更新:
+# 2023.8.30 14:00更新:
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 #   3.企业微信机器人/Wxpusher (二选一)
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 # 变量名 cltoken 示例: {"ck":"这里是cookie中authtoken的值","ts":"这里是推送Wxpusher获取UID"}
 # 变量名 cltoken 企业微信 示例: {"ck":"这里是cookie中authtoken的值","qw":"这里是推送企业微信机器人Key"}
-
+# 入口：https://entry-1318684421.cos.ap-nanjing.myqcloud.com/cos_b.html?openId=oiDdr5xiVUIwNQVvj1sADz2rb5Mg
 import requests
 #加密
 from Crypto.Cipher import AES
@@ -20,7 +20,6 @@ import re
 import time
 import os
 from urllib.parse import unquote,quote
-
 
 if os.getenv('cltoken') == None:
     print("Ck异常: 请至少填写一个账号ck!")
@@ -152,7 +151,7 @@ def do_read(u):
 
 def test(biz,link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
-    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
+    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz,link)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user+biz).json()
@@ -169,14 +168,15 @@ def test(biz,link):
 
 
 # 微信推送
-def WxSend(project, status, content,turl):
+def WxSend(project, status, content,turl,link):
     if tstype == "ts":
         result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
         print(f"微信消息推送: {result['msg']}")
+        print(f"手动微信阅读链接: {link}")
         print(f"手动检测链接: {unquote(turl)}")
     elif tstype == "qw":
         webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
-        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n### 微信原文: [点击打开文章]({link})"
         data = {"msgtype": "markdown", "markdown": {"content": txt}}
         headers = {"Content-Type": "text/plain"}
         result = ss.post(url=webhook, headers=headers, json=data).json()
