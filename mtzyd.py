@@ -7,7 +7,7 @@
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 # 变量名 mtztoken 示例: {"name": "备注", "ck":"这里是Authorization中share:login:后面的值","ts":"这里是推送Wxpusher获取UID"}
 # 变量名 mtztoken 企业微信 示例: {"name": "备注", "ck":"这里是Authorization中share:login:后面的值","qw":"这里是推送企业微信机器人Key"}
-
+# 入口：http://tg.1693464194.api.mengmorwpt2.cn/h5_share/ads/tg?user_id=124922
 import time
 import requests
 import random
@@ -74,7 +74,7 @@ def do_read():
                     else:
                         print(f"该文章没有biz:{data['url']}")
                         biz = re.findall("biz=(.*?)&amp;",ss.get(data['url']).text)[0]
-                    print(f"获取阅读文章成功({biz}): 模拟阅读{s}秒")
+                    print(f"获取阅读文章[{result['data'].index(data)}]成功({biz}): 模拟阅读{s}秒")
                     if biz in checkDict:
                         check = test(biz,data['url'])
                         if check:
@@ -113,7 +113,7 @@ def get_money():
 
 def test(biz,link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
-    WxSend("微信阅读-美添赚", f"检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
+    WxSend("微信阅读-美添赚", f"检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz,link)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user+biz).json()
@@ -130,14 +130,15 @@ def test(biz,link):
 
 
 # 微信推送
-def WxSend(project, status, content,turl):
+def WxSend(project, status, content,turl,link):
     if tstype == "ts":
         result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
         print(f"微信消息推送: {result['msg']}")
+        print(f"手动微信阅读链接: {link}")
         print(f"手动检测链接: {unquote(turl)}")
     elif tstype == "qw":
         webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
-        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n### 微信原文: [点击打开文章]({link})"
         data = {"msgtype": "markdown", "markdown": {"content": txt}}
         headers = {"Content-Type": "text/plain"}
         result = ss.post(url=webhook, headers=headers, json=data).json()
