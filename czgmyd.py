@@ -16,6 +16,10 @@ import requests
 import os
 from urllib.parse import unquote,quote
 
+
+if os.getenv('cltoken') == None:
+    print("Ck异常: 请至少填写一个账号ck!")
+    exit()
 ck_token = [eval(line) for line in os.getenv('gbtoken').strip().split('\n')]
 # 检测列表
 check_list = ['MzkyMzI5NjgxMA==', 'MzkzMzI5NjQ3MA==', 'Mzg5NTU4MzEyNQ==', 'Mzg3NzY5Nzg0NQ==', 'MzU5OTgxNjg1Mg==', 'Mzg4OTY5Njg4Mw==', 'MzI1ODcwNTgzNA==']
