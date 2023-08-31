@@ -5,176 +5,157 @@
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 #   3.企业微信机器人/Wxpusher (二选一)
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 变量名 xyytoken 示例: {"ck":"这里是cookie中ysm_uid的值","ts":"这里推送Wxpusher获取UID"}
-# 变量名 xyytoken 企业微信 示例:  {"ck":"这里是cookie中ysm_uid的值","qw":"这里是推送企业微信机器人Key"}
+# 变量名 cltoken 示例: {"ck":"这里是cookie中authtoken的值","ts":"这里是推送Wxpusher获取UID"}
+# 变量名 cltoken 企业微信 示例: {"ck":"这里是cookie中authtoken的值","qw":"这里是推送企业微信机器人Key"}
 
 import requests
-import re
-import time
+#加密
+from Crypto.Cipher import AES
+import base64
+# 随机值
 import random
+# 正则匹配
+import re
+# 时间
+import time
 import os
 from urllib.parse import unquote,quote
 
 
-if os.getenv('xyytoken') == None:
+if os.getenv('cltoken') == None:
     print("Ck异常: 请至少填写一个账号ck!")
     exit()
-ck_token = [eval(line) for line in os.getenv('xyytoken').strip().split('\n')]
+ck_token = [eval(line) for line in os.getenv('cltoken').strip().split('\n')]
+
+# 推送域名
+tsurl = 'https://linxi-send.run.goorm.app'
+# 临时用户名
+temp_user = ''
+# 推送TsKey
+TsKey = ''
+tstype= ''
+# 保持连接,重复利用
+ss = requests.session()
+
 
 headers = {
     'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380'
 }
 
-check_list = [
-    "MzkxNTE3MzQ4MQ==",
-    "Mzg5MjM0MDEwNw==",
-    "MzUzODY4NzE2OQ==",
-    "MzkyMjE3MzYxMg==",
-    "MzkxNjMwNDIzOA==",
-    "Mzg3NzUxMjc5Mg==",
-    "Mzg4NTcwODE1NA==",
-    "Mzk0ODIxODE4OQ==",
-    "Mzg2NjUyMjI1NA==",
-    "MzIzMDczODg4Mw==",
-    "Mzg5ODUyMzYzMQ==",
-    "MzU0NzI5Mjc4OQ==",
-    "Mzg5MDgxODAzMg==",
+checkDict=[
+'Mzg4MDU1MTc0NA==',
+'MzU5MDc0NjU4Mg==',
+'MzA3Njk1NzAyNA==',
+'MzI2ODcwOTQzMg==',
+'MzU5ODU0MzM4Mg==',
+'Mzg2OTcwOTQzNQ==',
+'MzI0NTgyOTYxOQ==',
+'MzI3MTY2OTYyNA==',
+'MjM5NTY1OTI0MQ==',
+'MzU3ODEyNTgyNQ==',
+'MzkyNDIxMzE4OA==',
+'MzI1NjY4Njc0Mw==',
 ]
 
 
-# 保持连接,重复利用
-ss = requests.session()
-# 推送域名
-tsurl = 'https://linxi-send.run.goorm.app'
-# 临时ck
-ysm_uid= ''
-# 推送TsKey
-TsKey = ''
-tstype = ''
-def ts ():
-    return str (int (time .time ()))+'000'
+def aes_encrypt(data):
+    block_size = AES.block_size  # 获取AES块大小
+    padding = lambda s: s + (block_size - len(s) % block_size) * chr(block_size - len(s) % block_size)  # 填充函数，使得数据长度为块大小的整数倍
+    key = b'5e4332761103722eb20bb1ad53907c6e'  # 密钥，需要根据实际情况修改
+    cipher = AES.new(key, AES.MODE_ECB)  # 使用ECB模式创建AES对象
+    encrypted_data = cipher.encrypt(padding(data).encode())  # 对数据进行加密
+    encrypted_data_base64 = base64.b64encode(encrypted_data).decode()  # 对加密后的数据进行base64编码
+    return encrypted_data_base64
 
-
-def signin():
-    result = ss.get('http://1692416143.3z2rpa.top/',headers=headers).text
-    signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
-    if signid == []:
-        print ('初始化失败,账号异常')
-        exit()
+def get_readhome():
+    url = 'https://sss.mvvv.fun/app/enter/read_home'
+    result = ss.get(url,headers=headers).json()
+    if result['code'] == 0:
+        url = "http://" + re.findall('//(.*?)/',result['data']['location'])[0]
+        get_read(url)
     else:
-        print ('初始化成功,账号登陆成功!')
-        return signid
+        print("获取阅读域名失败!")
+        get_read("http://hmqulo7g9p.qqaas.fun")
 
 
-def get_money(signid):
-    result = ss.get(f'http://1692429080.3z2rpa.top/yunonline/v1/exchange?unionid={ysm_uid}&request_id={signid}&qrcode_number=&addtime=').text
-    money = re.findall(r'id="exchange_gold">(.*?)</p>',result)
-    if money == []:
-        print ('金币获取失败,账号异常')
+def get_read(url):
+    result = ss.get(url+"/app/user/myPickInfo",headers=headers).json()
+    if result['code'] == 401:
+        print(f"账号异常:{result['msg']}")
     else:
-        if int(money[0]) >= 3000:
-            money = (int(money[0]) // 3000) * 3000
-            print(f"提交体现金币: {money}")
-            t_data = {'unionid':ysm_uid,'request_id':signid,'gold':money}
-            t_result = ss.post('http://1692429080.3z2rpa.top/yunonline/v1/user_gold',json=t_data).json()
-            if t_result['errcode'] == 0:
-                print(f"金币转金额成功: {t_result['data']['money']}")
-            else:
-                print(f"金币转金额失败: {t_result['msg']}")
-            j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
-            j_result = ss.post('http://1692422733.3z2rpa.top/yunonline/v1/withdraw',data=j_data).json()
-            print(f"体现结果: {j_result['msg']}")
-        else:
-            print(f'还未到达提现最低金币 当前金币: {money[0]}')
+        data = aes_encrypt(f'{{"moneyPick":{result["data"]["goldNow"]}}}')
+        result = ss.post(url+"/app/user/pickAuto",headers=headers,json=data).json()
+        print(f"兑换结果: {result['msg']}")
+        result = ss.get(url+"/app/user/myInfo",headers=headers).json()['data']
+        print(f"用户: {result['nameNick']} 今日已读: {result['completeTodayCount']}篇  获得积分: {result['completeTodayGold']}")
+        global temp_user
+        temp_user = result['nameNick']
+        if result['remainSec'] == 0:
+            print ('当前是读文章的状态')#line:93
+            get_myinfo(url)
+        else :#line:94
+            ttime =int (result['remainSec'] /60 )#line:95
+            print ('当前不是是读文章的状态,距离下次阅读还有',ttime ,'分钟')#line:96
+    
+    
+def get_myinfo(url):
+    result = ss.get(url+"/app/read/get",headers=headers).json()['data']['location']
+    u = re.findall(r'u=([^&]+)',result)[0]
+    print(f"获取到KEY: {u}")
+    do_read(u)
 
 
-
-def user_info():
-    result = ss.get(f'http://1692416143.3z2rpa.top/yunonline/v1/sign_info?time={ts()}000&unionid={ysm_uid}').json()
-    if result['errcode'] == 0:
-        pass
+def do_read(u):
+    result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
+    if result['bizCode'] !=0:
+        tips = {20:'文章正在补充中，稍后再试',30:'下批文章将在24小时后到来',10:'下批文章将在60分钟后到达',11:'当天达到上限'}
+        print(tips[result['bizCode']])
     else:
-        print ('获取用户信息失败，账号异常')
-
-def hasWechat():
-    result = ss.get(f'http://1692416143.3z2rpa.top/yunonline/v1/hasWechat?unionid={ysm_uid}').json()
-    if result['errcode'] == 0:
-        pass
-    else:
-        print ('获取用户信息失败，账号异常')
-
-def gold():
-    result = ss.get(f'http://1692416143.3z2rpa.top/yunonline/v1/gold?unionid={ysm_uid}&time={ts()}000').json()
-    if result['errcode'] == 0:
-        print(f"今日积分: {result['data']['day_gold']} 已阅读: {result['data']['day_read']}篇 剩余: {result['data']['remain_read']}篇")
-    else:
-        print ('获取用户信息失败，账号异常')
-
-
-def get_Key():
-    data = {'unionid':ysm_uid}
-    result = ss.post('http://1692416143.3z2rpa.top/yunonline/v1/wtmpdomain',json=data).json()
-    uk = re.findall(r'uk=([^&]+)',result['data']['domain'])
-    print(f"获取到KEY: {uk[0]}")
-    do_read(uk[0])
-
-def do_read(uk):
-    check_num = 0
-    while True:
-        result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}').json()
-        if result['errcode'] == 0:
-            link = result['data']['link']
-            l_result = ss.get(link,headers=headers).text
-            # 获取biz
-            biz = re.findall("biz=(.*?)&amp;",l_result)[0]
-            s = random.randint(6,8)
-            print (f'获取文章成功-{biz}-本次模拟读{s}秒')
+        check_num = 0
+        while True:
             if check_num <= 1:
-                if biz in check_list:
-                    print("阅读文章检测-已推送至微信,请60s内完成验证!")
+                taskKey = result['taskKey']
+                taskUrl = result['taskUrl']
+                # 获取biz
+                biz = re.findall("biz=(.*?)&amp;",ss.get(taskUrl).text)[0]
+                print(f"阅读任务ID({biz}): {taskKey}")
+                s = random.randint (10 ,12 )
+                print(f"随机阅读 {s} 秒")
+                if biz in checkDict:
                     check_num += 1
-                    #print(f"获取到微信文章: {link}")
-                    link = re.findall('_g.msg_link = "(.*?)"',l_result)[0]
-                    # 过检测
-                    check = test(biz,link)
+                    print("阅读文章检测-已推送至微信,请60s内完成验证!")
+                    check = test(biz,result['taskUrl'])
                     if check == True:
                         print("检测文章-过检测成功啦!")
-                        time.sleep(s)
-                        r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
-                        if r_result['errcode'] == 0:
-                            print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
+                        time.sleep(5)
+                        url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
+                        result = ss.get(url,headers=headers).json()['data']
+                        if result['bizCode'] == 0:
+                            print(f"阅读结果: {result['detail']}")
                         else:
-                            print(r_result)
-                            break
+                            print(f"阅读失败: {result}")
                     else:
                         print("检测文章-过检测失败啦!")
                         break
                 else:
                     time.sleep(s)
-                    r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
-                    if r_result['errcode'] == 0:
-                        print(f"阅读已完成: 获得{r_result['data']['gold']}积分")
+                    url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
+                    result = ss.get(url,headers=headers).json()['data']
+                    if result['bizCode'] == 0:
+                        print(f"阅读结果: {result['detail']}")
                     else:
-                        print(f"阅读失败,获取到未收录检测BIZ:{biz}")
-                        print(r_result)
-                        break
+                        print(f"阅读失败: {result}")
             else:
                 print("获取到多次检测文章-已自动停止防止黑号,请手动去处理!")
-                break
-        else:
-            if result['msg'] == "任务重复" or result['msg'] == "任务超时":
-                print(f"阅读失败: {result['msg']}重新获取文章")
-            else:
-                print (f"阅读提醒: {result['msg']}")
                 break
 
 
 def test(biz,link):
-    result = ss.post(tsurl+"/task",json={"biz":biz+ysm_uid,"url":link}).json()
-    WxSend("微信阅读-小阅阅读", f"{ysm_uid}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+biz+ysm_uid)
+    result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
+    WxSend("微信阅读-微信阅读",f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+biz+ysm_uid).json()
+        result = ss.get(tsurl+"/back/"+temp_user+biz).json()
         if result['status'] == True:
             check = True 
             break
@@ -185,8 +166,6 @@ def test(biz,link):
         print("手动检测超时,验证失败!")
         check = False 
     return check
-
-
 
 
 # 微信推送
@@ -205,11 +184,9 @@ def WxSend(project, status, content,turl):
         print(f"手动验证链接:{unquote(turl)}")
 
 
-
 for i in ck_token:
     print(f"============当前第{ck_token.index(i)+1}个账户============")
-    headers['Cookie'] = f"ysm_uid={i['ck']}"
-    ysm_uid = i['ck']
+    headers['Cookie'] = f'authtoken={i["ck"]}; snapshot=0'
     if 'ts' in i:
         TsKey = i['ts']
         tstype = 'ts'
@@ -219,10 +196,4 @@ for i in ck_token:
     else:
         print("未设置推送Tskey,请设置(企业微信'qw'/Wxpusher'ts')")
         exit()
-    signid = signin()
-    user_info()
-    hasWechat()
-    gold()
-    get_Key()
-    gold()
-    get_money(signid)
+    get_readhome()
