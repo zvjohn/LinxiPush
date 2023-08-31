@@ -1,12 +1,12 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.31更新:
-#   1.改为变量ck,(多账号)一行一个ck示例
+# 2023.8.31 14:00更新:
+#   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
-# 钢镚阅读入口: http://2496831.x1kuoc6e.i6xcln7mgi97.cloud/?p=2496831
+#   3.企业微信机器人/Wxpusher (二选一)
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 变量名 gbtoken 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是Wxpusher获取UID"}
-
+# 变量名 gbtoken Wxpusher 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是推送Wxpusher获取UID"}
+# 变量名 gbtoken 企业微信 示例: {"ck":"这里是cookie中gfsessionid的值","qw":"这里是推送企业微信机器人Key"}
 
 import re
 import time
@@ -21,10 +21,12 @@ if os.getenv('gbtoken') == None:
     print("Ck异常: 请至少填写一个账号ck!")
     exit()
 ck_token = [eval(line) for line in os.getenv('gbtoken').strip().split('\n')]
+
 # 检测列表
 check_list = ['MzkyMzI5NjgxMA==', 'MzkzMzI5NjQ3MA==', 'Mzg5NTU4MzEyNQ==', 'Mzg3NzY5Nzg0NQ==', 'MzU5OTgxNjg1Mg==', 'Mzg4OTY5Njg4Mw==', 'MzI1ODcwNTgzNA==']
-# 推送WxpusherUid
-WxpusherUid = ''
+# 推送TsKey
+TsKey = ''
+tstype = ''
 # 推送域名
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
@@ -158,16 +160,32 @@ def test(biz,link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
-    print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {unquote(turl)}")
+    if tstype == "ts":
+        result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
+        print(f"微信消息推送: {result['msg']}")
+        print(f"手动检测链接: {unquote(turl)}")
+    elif tstype == "qw":
+        webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        data = {"msgtype": "markdown", "markdown": {"content": txt}}
+        headers = {"Content-Type": "text/plain"}
+        result = ss.post(url=webhook, headers=headers, json=data).json()
+        print(f"企业微信BOT推送: {result['errmsg']}")
+        print(f"手动验证链接:{unquote(turl)}")
 
 
 for i in ck_token:
     print(f"============当前第{ck_token.index(i)+1}个账户============")
     headers['Cookie'] = f"gfsessionid={i['ck']};"
-    WxpusherUid = i['ts']
+    if 'ts' in i:
+        TsKey = i['ts']
+        tstype = 'ts'
+    elif 'qw' in i:
+        TsKey = i['qw']
+        tstype = 'qw'
+    else:
+        print("未设置推送Tskey,请设置(企业微信'qw'/Wxpusher'ts')")
+        exit()
     home()
     read()
     get_money()
