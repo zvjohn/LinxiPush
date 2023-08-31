@@ -13,6 +13,9 @@ import random
 import os
 from urllib.parse import unquote,quote
 
+if os.getenv('xyytoken') == None:
+    print("Ck异常: 请至少填写一个账号ck!")
+    exit()
 ck_token = [eval(line) for line in os.getenv('xyytoken').strip().split('\n')]
 
 headers = {
