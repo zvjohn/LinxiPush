@@ -1,6 +1,6 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.30更新:
+# 2023.8.31更新:
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
@@ -128,6 +128,7 @@ def do_read(uk):
                     print("阅读文章检测-已推送至微信,请60s内完成验证!")
                     check_num += 1
                     print(f"获取到微信文章: {link}")
+                    link = re.findall('_g.msg_link = "(.*?)"',l_result)[0]
                     # 过检测
                     check = test(biz,link)
                     if check == True:
@@ -162,12 +163,12 @@ def do_read(uk):
                 break
 
 
-def test(link):
-    result = ss.post(tsurl+"/task",json={"biz":"xyy"+ysm_uid,"url":link}).json()
-    WxSend("微信阅读-小阅阅读", f"{ysm_uid}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+"xyy"+ysm_uid)
+def test(biz,link):
+    result = ss.post(tsurl+"/task",json={"biz":biz+ysm_uid,"url":link}).json()
+    WxSend("微信阅读-小阅阅读", f"{ysm_uid}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+biz+ysm_uid)
     check = ''
     for i in range(30):
-        result = ss.get(tsurl+"/back/"+"xyy"+ysm_uid).json()
+        result = ss.get(tsurl+"/back/"+biz+ysm_uid).json()
         if result['status'] == True:
             check = True 
             break
@@ -178,8 +179,6 @@ def test(link):
         print("手动检测超时,验证失败!")
         check = False 
     return check
-
-
 
 
 # 微信推送
