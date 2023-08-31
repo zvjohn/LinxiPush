@@ -1,10 +1,12 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.31更新:
+# 2023.8.31 14:00更新:
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+#   3.企业微信机器人/Wxpusher (二选一)
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 变量名 shtoken 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","ts":"这里是Wxpusher获取UID"}
+# 变量名 shtoken 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","ts":"这里推送Wxpusher获取UID"}
+# 变量名 shtoken 企业微信 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","qw":"这里是推送企业微信机器人Key"}
 
 import requests
 import re
@@ -27,8 +29,9 @@ headers = {
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ''
-# 微信昵称
-WxpusherUid = ""
+# 推送TsKey
+TsKey = ""
+tstype = ''
 # 保持连接,重复使用
 ss = requests.session()
 
@@ -121,13 +124,21 @@ def test(link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
-    print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {unquote(turl)}")
+    if tstype == "ts":
+        result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
+        print(f"微信消息推送: {result['msg']}")
+        print(f"手动检测链接: {unquote(turl)}")
+    elif tstype == "qw":
+        webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        data = {"msgtype": "markdown", "markdown": {"content": txt}}
+        headers = {"Content-Type": "text/plain"}
+        result = ss.post(url=webhook, headers=headers, json=data).json()
+        print(f"企业微信BOT推送: {result['errmsg']}")
+        print(f"手动验证链接:{unquote(turl)}")
 
 
-for i in ['/user','/coin','/ox']: # 
+for i in ['/user','/coin','/ox']: # 删除其中不需要的即可跑单阅读
     domain = 'http://u.cocozx.cn/api'+i # 花花 /user 元宝阅读 /coin 星空阅读 /ox
     ydlist = {'/user':'花花','/coin':'元宝','/ox':'星空'}
     ydname = ydlist[i]
@@ -136,7 +147,15 @@ for i in ['/user','/coin','/ox']: #
         print(f"============当前第{ck_token.index(u)+1}个账户============")
         data['un'] = u['un']
         data['token'] = u['token']
-        WxpusherUid = u['ts']
+        if 'ts' in i:
+            TsKey = i['ts']
+            tstype = 'ts'
+        elif 'qw' in i:
+            TsKey = i['qw']
+            tstype = 'qw'
+        else:
+            print("未设置推送Tskey,请设置(企业微信'qw'/Wxpusher'ts')")
+            exit()
         max_money = user()  # 提现金额
         read()
         max_money = user()  # 提现金额
