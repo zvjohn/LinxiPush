@@ -4,7 +4,7 @@
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 变量名 shtoken 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是Wxpusher获取UID"}
+# 变量名 shtoken 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","ts":"这里是Wxpusher获取UID"}
 
 import requests
 import re
