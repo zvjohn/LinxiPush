@@ -1,6 +1,6 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.31 14:00更新:
+# 2023.8.31 19:00更新:
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 #   3.企业微信机器人/Wxpusher (二选一)
@@ -43,6 +43,7 @@ headers = {
     'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380'
 }
 
+
 checkDict=[
 'Mzg4MDU1MTc0NA==',
 'MzU5MDc0NjU4Mg==',
@@ -56,7 +57,12 @@ checkDict=[
 'MzU3ODEyNTgyNQ==',
 'MzkyNDIxMzE4OA==',
 'MzI1NjY4Njc0Mw==',
-'MzA5MzE1ODI4NQ=='
+'MzA5MzE1ODI4NQ==',
+'MzAxMDEyODg2MA==',
+'MzI4MTAzODE5NA==',
+"MzU4OTg3Njg1Nw==",
+"MzkyMjExNzE1Ng==",
+"Mzg3MTgyOTgyMw==",
 ]
 
 
@@ -144,6 +150,9 @@ def do_read(u):
                     time.sleep(s)
                     url = f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1&key={taskKey}'
                     result = ss.get(url,headers=headers).json()['data']
+                    if result['bizCode'] == 31:
+                        print(f"未收录biz: {biz} 检测结果: {result['detail']}")
+                        break
                 if result['bizCode'] == 0:
                     print(f"阅读结果: {result['detail']}")
                 elif result['bizCode'] == 31:
