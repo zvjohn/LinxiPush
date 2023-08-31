@@ -131,6 +131,9 @@ def do_read(u):
                         result = ss.get(url,headers=headers).json()['data']
                         if result['bizCode'] == 0:
                             print(f"阅读结果: {result['detail']}")
+                        elif result['bizCode'] == 31:
+                            print(f"检测结果: {result['detail']}")
+                            result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
                         else:
                             print(f"阅读失败: {result}")
                     else:
@@ -142,6 +145,9 @@ def do_read(u):
                     result = ss.get(url,headers=headers).json()['data']
                     if result['bizCode'] == 0:
                         print(f"阅读结果: {result['detail']}")
+                    elif result['bizCode'] == 31:
+                        print(f"检测结果: {result['detail']}")
+                        result = ss.get(f'https://sss.mvvv.fun/app/task/doRead?u={u}&type=1',headers=headers).json()['data']
                     else:
                         print(f"阅读失败: {result}")
             else:
