@@ -94,6 +94,9 @@ def get_money(max_money):
     time.sleep(2)
     print(f"=================={ydname}提现====================")
     if ydname == "花花":
+        q_data = {"mid":temp_user,"un":data['un'],"token":data['token'],"pageSize":20}
+        result = ss.post('http://u.cocozx.cn/api/user/psmoneyc',headers=headers,json=q_data).json()
+        print(f"花花收取徒弟贡献: {result}")
         t = "/wd"
     else:
         t = "/wdmoney"
