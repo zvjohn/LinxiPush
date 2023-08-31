@@ -127,7 +127,7 @@ def do_read(uk):
                 if biz in check_list:
                     print("阅读文章检测-已推送至微信,请60s内完成验证!")
                     check_num += 1
-                    print(f"获取到微信文章: {link}")
+                    # print(f"获取到微信文章: {link}")
                     link = re.findall('_g.msg_link = "(.*?)"',l_result)[0]
                     # 过检测
                     check = test(biz,link)
