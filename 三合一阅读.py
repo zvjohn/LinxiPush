@@ -1,6 +1,6 @@
 # Author: lindaye
 # V1.1.6
-# 2023.8.30更新:
+# 2023.8.31更新:
 #   1.改为变量ck,一行一个ck示例
 #   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
@@ -13,6 +13,9 @@ import os
 from urllib.parse import unquote,quote
 
 
+if os.getenv('shtoken') == None:
+    print("Ck异常: 请至少填写一个账号ck!")
+    exit()
 ck_token = [eval(line) for line in os.getenv('shtoken').strip().split('\n')]
 
 headers = {
