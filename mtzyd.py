@@ -18,6 +18,9 @@ checkDict = {
     "MzkzNjI3NDAwOA==",
 }
 
+if os.getenv('mtztoken') == None:
+    print("Ck异常: 请至少填写一个账号ck!")
+    exit()
 ck_token = [eval(line) for line in os.getenv('mtztoken').strip().split('\n')]
 ss = requests.session()
 # 推送域名
