@@ -7,7 +7,7 @@
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 # 变量名 gbtoken Wxpusher 示例: {"ck":"这里是cookie中gfsessionid的值","ts":"这里是推送Wxpusher获取UID"}
 # 变量名 gbtoken 企业微信 示例: {"ck":"这里是cookie中gfsessionid的值","qw":"这里是推送企业微信机器人Key"}
-
+# 入口：http://2496831.qz2hkanpfw.orut03cj0o2p.cloud/?p=2496831
 import re
 import time
 import hashlib
@@ -47,13 +47,13 @@ def get_sign():
     return data
 
 def home():
-    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/share"
+    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/share"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     share_link = response["data"]["share_link"][0]
     p_value = share_link.split("=")[1].split("&")[0]
     global temp_user
     temp_user = p_value
-    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/info"
+    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/info"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     if response["code"] == 0:
         remain = response["data"]["remain"]
@@ -66,7 +66,7 @@ def home():
 def read():
     check_status = False
     while True:
-        url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/task"
+        url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/task"
         response = ss.get(url, headers=headers, data=get_sign()).json()
         if response["code"] == 1:
             if "秒" in response['message']:
@@ -91,8 +91,8 @@ def read():
                         if check == True:
                             print("检测文章-过检测成功啦!")
                             time.sleep(s)
-                            response = ss.post("http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/finish", headers=headers, data=get_sign()).json()
-                            print(response)
+                            response = ss.post("http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/finish", headers=headers, data=get_sign()).json()
+                            print(f'阅读文章成功---获得钢镚[{response["data"]["gain"]}]---已读{response["data"]["read"]}篇')
                         else:
                             print("检测文章-过检测失败啦!")
                             break
@@ -101,12 +101,12 @@ def read():
                         break
                 else:
                     time.sleep(s)
-                    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/read/finish"
+                    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/finish"
                     response = ss.post(url, headers=headers, data=get_sign()).json()
+                    print(response)
                     if response["code"] == 0:
                         if response["data"]["check"] is False:
-                            gain = response["data"]["gain"]
-                            print(f"阅读文章成功---获得钢镚[{gain}]")
+                            print(f'阅读文章成功---获得钢镚[{response["data"]["gain"]}]---已读{response["data"]["read"]}篇')
                         else:
                             print(f"获取到未收录检测: {biz} 将自动停止脚本")
                             break
@@ -129,7 +129,7 @@ def read():
 
 def get_money():
     print("============开始微信提现============")
-    url = "http://2496831.o5dukl6ba8wl.2yr7gmgnc2jat.cloud/withdraw/wechat"
+    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/withdraw/wechat"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     if response["code"] == 0:
         print(response["message"])
@@ -141,8 +141,7 @@ def get_money():
 
 def test(biz,link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user+biz,"url":link}).json()
-    print(f"手动微信阅读链接: {link}")
-    WxSend("微信阅读-钢镚阅读", "检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz)
+    WxSend("微信阅读-钢镚阅读", "检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user+biz,link)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user+biz).json()
@@ -159,14 +158,15 @@ def test(biz,link):
 
 
 # 微信推送
-def WxSend(project, status, content,turl):
+def WxSend(project, status, content,turl,link):
     if tstype == "ts":
         result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
         print(f"微信消息推送: {result['msg']}")
+        print(f"手动微信阅读链接: {link}")
         print(f"手动检测链接: {unquote(turl)}")
     elif tstype == "qw":
         webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
-        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n### 微信原文: [点击打开文章]({link})"
         data = {"msgtype": "markdown", "markdown": {"content": txt}}
         headers = {"Content-Type": "text/plain"}
         result = ss.post(url=webhook, headers=headers, json=data).json()
