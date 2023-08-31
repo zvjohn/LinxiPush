@@ -1,11 +1,10 @@
-# Author: linxi
-# update: 2023-08-29 16:00
-# 从零开始阅读
-# 入口: https://entry-1318684421.cos.ap-nanjing.myqcloud.com/cos_b.html?openId=oiDdr5xiVUIwNQVvj1sADz2rb5Mg
-# 1.关注Wxpusher 2.修改Wxpusher微信UID 3.替换authtoken为抓包的authtoken
-# wxpusher 使用教程: 扫码获取UID(填写到wxname): https://wxpusher.zjiecode.com/demo/
-# V0.1.2(测试版)
-
+# Author: lindaye
+# V1.1.6
+# 2023.8.30更新:
+#   1.改为变量ck,一行一个ck示例
+#   2.采用Wxpusher进行推送服务(手动过检测),仅需扫码获取UID,无需其他操作
+# Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+# 变量名 cltoken 示例: {"ck":"这里是cookie中authtoken的值","ts":"这里是Wxpusher获取UID"}
 
 import requests
 #加密
@@ -17,22 +16,24 @@ import random
 import re
 # 时间
 import time
-import urllib.parse
+import os
+from urllib.parse import unquote,quote
 
+if os.getenv('cltoken') == None:
+    print("Ck异常: 请至少填写一个账号ck!")
+    exit()
+ck_token = [eval(line) for line in os.getenv('cltoken').strip().split('\n')]
 # 推送域名
 tsurl = 'https://linxi-send.run.goorm.app'
 # 临时用户名
 temp_user = ''
 # 微信UID
-wxname = 'XX'
+WxpusherUid = ''
 # 保持连接,重复利用
 ss = requests.session()
-# 抓包
-authtoken = "xxx"
 
 
 headers = {
-    'Cookie': f'authtoken={authtoken}; snapshot=0',
     'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380'
 }
 
@@ -164,9 +165,14 @@ def test(biz,link):
 
 # 微信推送
 def WxSend(project, status, content,turl):
-    turl = urllib.parse.quote(turl)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
+    turl = quote(turl)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{WxpusherUid}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
-    print(f"手动检测链接: {turl}")
+    print(f"手动检测链接: {unquote(turl)}")
 
-get_readhome()
+
+for i in ck_token:
+    print(f"============当前第{ck_token.index(i)+1}个账户============")
+    headers['Cookie'] = f'authtoken={i["ck"]}; snapshot=0'
+    WxpusherUid = i['ts']
+    get_readhome()
