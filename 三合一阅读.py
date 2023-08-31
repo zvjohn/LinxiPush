@@ -7,13 +7,14 @@
 # Wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 # 变量名 shtoken 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","ts":"这里推送Wxpusher获取UID"}
 # 变量名 shtoken 企业微信 示例: {"un":"这里是cookie的un值","token":"这里是cookie的token值","qw":"这里是推送企业微信机器人Key"}
-
+# http://mr1693464627736.zppnplq.cn/coin/index.html?mid=CR42F6WUF 【元宝阅读】看文章赚零花钱，全新玩法，提现秒到(若链接打不开，可复制到手机浏览器里打开)
+# http://mr1693464650323.rikybod.cn/ox/index.html?mid=RG7UUSYFS 【星空阅读】看文章赚零花钱，全新玩法，提现秒到(若链接打不开，可复制到手机浏览器里打开)
+# http://mr1693464671933.ennvjtb.cn/user/index.html?mid=D33C7W3A3 【花花阅读】看文章赚零花钱，全新玩法，提现秒到(若链接打不开，可复制到手机浏览器里打开)
 import requests
 import re
 import time
 import os
 from urllib.parse import unquote,quote
-
 
 if os.getenv('shtoken') == None:
     print("Ck异常: 请至少填写一个账号ck!")
@@ -106,7 +107,7 @@ def get_money(max_money):
 
 def test(link):
     result = ss.post(tsurl+"/task",json={"biz":temp_user,"url":link}).json()
-    WxSend(f"微信阅读-{ydname}阅读", f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user)
+    WxSend(f"微信阅读-{ydname}阅读", f"{temp_user}-检测文章", "请在60s内阅读当前文章",tsurl+"/read/"+temp_user,link)
     check = ''
     for i in range(30):
         result = ss.get(tsurl+"/back/"+temp_user).json()
@@ -123,14 +124,15 @@ def test(link):
 
 
 # 微信推送
-def WxSend(project, status, content,turl):
+def WxSend(project, status, content,turl,link):
     if tstype == "ts":
         result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{TsKey}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(turl)}%27%22%3E').json()
         print(f"微信消息推送: {result['msg']}")
+        print(f"手动微信阅读链接: {link}")
         print(f"手动检测链接: {unquote(turl)}")
     elif tstype == "qw":
         webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={TsKey}"
-        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n"
+        txt = f"## `{project}`\n### 通知状态: {status}\n ### 通知备注: {content}\n### 通知链接: [点击开始检测阅读]({turl})\n### 微信原文: [点击打开文章]({link})"
         data = {"msgtype": "markdown", "markdown": {"content": txt}}
         headers = {"Content-Type": "text/plain"}
         result = ss.post(url=webhook, headers=headers, json=data).json()
@@ -147,11 +149,11 @@ for i in ['/user','/coin','/ox']: # 删除其中不需要的即可跑单阅读
         print(f"============当前第{ck_token.index(u)+1}个账户============")
         data['un'] = u['un']
         data['token'] = u['token']
-        if 'ts' in i:
-            TsKey = i['ts']
+        if 'ts' in u:
+            TsKey = u['ts']
             tstype = 'ts'
-        elif 'qw' in i:
-            TsKey = i['qw']
+        elif 'qw' in u:
+            TsKey = u['qw']
             tstype = 'qw'
         else:
             print("未设置推送Tskey,请设置(企业微信'qw'/Wxpusher'ts')")
