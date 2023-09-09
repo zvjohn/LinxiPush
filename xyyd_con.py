@@ -1,6 +1,7 @@
 # Author: lindaye
 # V1.1.6
 # 活动入口：https://sd8690.viptaoyou.top:10261/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=sd8690.viptaoyou.top:10261&codeuserid=2&time=1694212129
+# 变量xyytoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"} 一行一个
 import requests
 import json
 import time
@@ -135,11 +136,11 @@ if __name__ == '__main__':
                     BY-林夕               Verion: 1.1.7(并发)
 """)
 
-    if os.getenv('gbtoken') == None:
-        print("账号Cookie异常: 请添加gbtoken变量!")
+    if os.getenv('xyytoken') == None:
+        print("账号Cookie异常: 请添加xyytoken变量!")
         exit()
     # CK列表
-    ck_token = [json.loads(line) for line in os.getenv('gbtoken').splitlines()]
+    ck_token = [json.loads(line) for line in os.getenv('xyytoken').splitlines()]
     # 创建进程池，默认会根据系统的CPU核心数创建相应数量的进程
     with Pool() as pool:
         # 使用enumerate函数获取每个ID在列表中的索引，并与ID值一起作为参数传递给test函数
