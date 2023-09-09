@@ -1,6 +1,7 @@
 # Author: lindaye
 # V1.1.6
 # 活动入口：http://2496831.sl4mwis5.gbl.avc14qvjzax7.cloud/?p=2496831
+# 变量gbtoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}
 import requests
 from multiprocessing import Pool
 import re
