@@ -1,4 +1,6 @@
-
+# Author: lindaye
+# V1.1.6
+# 活动入口：https://sd8690.viptaoyou.top:10261/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=sd8690.viptaoyou.top:10261&codeuserid=2&time=1694212129
 import requests
 import json
 import time
