@@ -80,7 +80,12 @@ def test(index,ck):
                 link = result['data']['link']
                 l_result = ss.get(link,headers=headers).text
                 # 获取biz
-                biz = re.findall("biz=(.*?)&amp;",l_result)[0]
+                biz = re.findall("biz=(.*?)&amp;",l_result)
+                if biz == []:
+                    print(f'当前账号【{str(index+1)}】:未找到BIZ,重新获取')
+                    continue
+                else:
+                    biz = biz[0]
                 s = random.randint(6,8)
                 print (f'当前账号【{str(index+1)}】:获取文章成功-{biz}-本次模拟读{s}秒')
                 if biz in check_list:
