@@ -1,7 +1,8 @@
 # LinxiPush(`林夕微信推送助手V1.0`)
 #### 注：更新钢镚、小阅阅读并发版本con.py（检测更新为全手动检测30s 无回调服务器支持，可根据自己的账号数量自调check_status函数延迟时间）
 
-## 全自动过检测`Wxpusher全自动过检测工具 V1.0`已上传。授权请联系我
+## 全自动过检测`Wxpusher全自动过检测工具Win10版本 V1.0`已上传。授权请联系我
+## 全自动过检测`Wxpusher全自动过检测工具兼容版 V1.0`[下载地址](https://www.123pan.com/s/ZwqRVv-Um4Gd.html)
 #### 特此感谢[@zh-h](https://github.com/zh-h) 大佬的开源项目:[https://github.com/zh-h/Windows.Media.Ocr.Cli](https://github.com/zh-h/Windows.Media.Ocr.Cli)
 
 > #### `Wxpusher`推送使用示例:
