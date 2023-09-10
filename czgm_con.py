@@ -76,7 +76,7 @@ def test(index,ck):
                 if biz in check_list:
                     print(f"当前账号【{str(index+1)}】获取到检测文章,已推送到微信,请60s内完成验证!")
                     # 过检测
-                    check = check_status(ck['ts'],response["data"]["link"])
+                    check = check_status(ck['ts'],response["data"]["link"],index)
                     if check == True:
                         print(f"当前账号【{str(index+1)}】检测文章-过检测成功啦!")
                         response = ss.post("http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/finish", headers=headers, data=get_sign()).json()
@@ -119,11 +119,13 @@ def test(index,ck):
     ss.close
 
 
-def check_status(key,link):
+def check_status(key,link,index):
+    print(f"当前第【{index+1}】个账号 避免并发同一时间多个推送,本次推送延迟{index}秒")
+    time.sleep(index)
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(30)
+    time.sleep(60)
     return True
 
 if __name__ == '__main__':
