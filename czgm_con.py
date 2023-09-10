@@ -112,13 +112,14 @@ def test(index,ck):
         print(f'当前账号【{str(index+1)}】开始提现:{response["message"]}')
     else:
         print(f'当前账号【{str(index+1)}】未知错误:{response}')
+    ss.close
 
 
 def check_status(key,link):
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(30)
+    time.sleep(60)
     return True
 
 
@@ -142,3 +143,7 @@ if __name__ == '__main__':
         # 使用enumerate函数获取每个ID在列表中的索引，并与ID值一起作为参数传递给test函数
         # 使用map方法将每个元组作为参数提交到进程池中
         pool.starmap(test, list(enumerate(ck_token)))
+        # 关闭进程池
+        pool.close()
+        # 等待所有子进程执行完成
+        pool.join()
