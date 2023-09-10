@@ -1,6 +1,7 @@
 # Author: lindaye
 # V0.1
 # 本地和青龙二选一
+# 本地请在脚本最下方添加示例:{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}到本地变量ck_token
 
 import requests
 import json
