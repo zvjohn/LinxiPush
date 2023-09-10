@@ -1,5 +1,5 @@
 # Author: lindaye
-# V1.1.6
+# V1.1.6 Update:2023-09-10
 # 活动入口：http://2496831.sl4mwis5.gbl.avc14qvjzax7.cloud/?p=2496831
 # 变量gbtoken 值{"ck":"gfsessionid的值","ts":"Wxpusher的UID"} 一行一个
 # 内置ck方法ck_token = [{"ck":"gfsessionid的值","ts":"Wxpusher的UID"},{"ck":"gfsessionid的值","ts":"Wxpusher的UID"}]
@@ -18,7 +18,7 @@ from urllib.parse import unquote,quote
 # 检测列表
 check_list = [
     'MzkyMzI5NjgxMA==','MzkzMzI5NjQ3MA==','Mzg5NTU4MzEyNQ==', 'Mzg3NzY5Nzg0NQ==', 'MzU5OTgxNjg1Mg==',
-    'Mzg4OTY5Njg4Mw==', 'MzI1ODcwNTgzNA=='
+    'Mzg4OTY5Njg4Mw==', 'MzI1ODcwNTgzNA==','Mzg2NDY5NzU0Mw=='
 ]
 
 def get_sign():
@@ -39,12 +39,16 @@ def test(index,ck):
         "User-Agent": "Mozilla/5.0 (Linux; Android 9; V1923A Build/PQ3B.190801.06161913; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/5635 MicroMessenger/8.0.40.2420(0x28002837) WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64",
         "Cookie":f"gfsessionid={ck['ck']};"
     }
-    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/share"
-    response = ss.get(url, headers=headers, data=get_sign()).json()
-    share_link = response["data"]["share_link"][0]
-    p_value = share_link.split("=")[1].split("&")[0]
-    global temp_user
-    temp_user = p_value
+    try:
+        url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/share"
+        response = ss.get(url, headers=headers, data=get_sign()).json()
+        share_link = response["data"]["share_link"][0]
+        p_value = share_link.split("=")[1].split("&")[0]
+        global temp_user
+        temp_user = p_value
+    except:
+        print(f"请检测第{str(index+1)}个账号的CK({ck['ck']})是否正确!")
+        return False
     url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/info"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     if response["code"] == 0:
@@ -74,7 +78,7 @@ def test(index,ck):
                     # 过检测
                     check = check_status(ck['ts'],response["data"]["link"])
                     if check == True:
-                        print("当前账号【{str(index+1)}】检测文章-过检测成功啦!")
+                        print(f"当前账号【{str(index+1)}】检测文章-过检测成功啦!")
                         response = ss.post("http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/finish", headers=headers, data=get_sign()).json()
                         print(f'当前账号【{str(index+1)}】阅读文章成功---获得钢镚[{response["data"]["gain"]}]---已读{response["data"]["read"]}篇')
                     else:
@@ -119,9 +123,8 @@ def check_status(key,link):
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(60)
+    time.sleep(30)
     return True
-
 
 if __name__ == '__main__':
     print("""██╗     ██╗███╗   ██╗██╗  ██╗██╗       ██████╗ ██████╗ ██╗   ██╗██████╗ 
