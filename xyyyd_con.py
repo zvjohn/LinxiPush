@@ -127,7 +127,7 @@ def test(index,ck):
                 else:
                     print (f"当前账号【{str(index+1)}】:阅读提醒: {result['msg']}")
                     break
-
+    ss.close
 
 def check_status(key,link,index):
     time.sleep(index)
@@ -158,3 +158,7 @@ if __name__ == '__main__':
         # 使用enumerate函数获取每个ID在列表中的索引，并与ID值一起作为参数传递给test函数
         # 使用map方法将每个元组作为参数提交到进程池中
         pool.starmap(test, list(enumerate(ck_token)))
+        # 关闭进程池
+        pool.close()
+        # 等待所有子进程执行完成
+        pool.join()
