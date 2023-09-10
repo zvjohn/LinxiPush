@@ -134,9 +134,8 @@ def check_status(key,link,index):
     result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(30)
+    time.sleep(60)
     return True
-
 
 if __name__ == '__main__':
     print("""██╗     ██╗███╗   ██╗██╗  ██╗██╗     ██╗  ██╗██╗   ██╗██╗   ██╗██████╗ 
