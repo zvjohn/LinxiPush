@@ -13,6 +13,7 @@ import os
 from multiprocessing import Pool
 from urllib.parse import unquote,quote
 
+domain = 'http://1694168723.yxdl444.top'
 
 check_list = [
     "MzkxNTE3MzQ4MQ==","Mzg5MjM0MDEwNw==","MzUzODY4NzE2OQ==","MzkyMjE3MzYxMg==","MzkxNjMwNDIzOA==","Mzg3NzUxMjc5Mg==",
@@ -31,49 +32,53 @@ def test(index,ck):
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
         'Cookie':f"ysm_uid={ck['ck']}"
     }
-    result = ss.get('http://1693464284.sethlee.top/',headers=headers).text
+    result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
     if signid == []:
         print (f'当前账号【{str(index+1)}】:初始化失败,账号异常')
         exit()
     else:
         print (f'当前账号【{str(index+1)}】:初始化成功,账号登陆成功!')
-        result = ss.get(f'http://1693464284.sethlee.top/yunonline/v1/exchange?unionid={ysm_uid}&request_id={signid}&qrcode_number=&addtime=').text
+        result = ss.get(f'{domain}/yunonline/v1/exchange?unionid={ysm_uid}&request_id={signid}&qrcode_number=&addtime=').text
         money = re.findall(r'id="exchange_gold">(.*?)</p>',result)
         if money == []:
             print (f'当前账号【{str(index+1)}】:金币获取失败,账号异常')
         else:
+            rmb = re.findall(r'money = (.*?);',result)[0]
             if int(money[0]) >= 3000:
                 money = (int(money[0]) // 3000) * 3000
                 print(f"当前账号【{str(index+1)}】:提交体现金币: {money}")
                 t_data = {'unionid':ysm_uid,'request_id':signid,'gold':money}
-                t_result = ss.post('http://1693464284.sethlee.top/yunonline/v1/user_gold',json=t_data).json()
+                t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
                 if t_result['errcode'] == 0:
-                    print(f"当前账号【{str(index+1)}】金币转金额成功: {t_result['data']['money']}")
+                    print(f"当前账号【{str(index+1)}】金币转金额成功: {t_result['data']['money']} 当前余额:{rmb}")
                 else:
-                    print(f"当前账号【{str(index+1)}】金币转金额失败: {t_result['msg']}")
-                j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
-                j_result = ss.post('http://1693464284.sethlee.top/yunonline/v1/withdraw',data=j_data).json()
-                print(f"当前账号【{str(index+1)}】体现结果: {j_result['msg']}")
+                    print(f"当前账号【{str(index+1)}】金币转金额失败: {t_result['msg']} 当前余额:{rmb}")
+                if rmb >= "2.0":
+                    j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
+                    j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
+                    print(f"当前账号【{str(index+1)}】体现结果: {j_result['msg']}")
+                else:
+                    print(f"当前账号【{str(index+1)}】余额小于2元暂不提现!")
             else:
-                print(f'当前账号【{str(index+1)}】还未到达提现最低金币 当前金币: {money[0]}')
-        result = ss.get(f'http://1693464284.sethlee.top/yunonline/v1/sign_info?time={ts()}000&unionid={ysm_uid}').json()
+                print(f'当前账号【{str(index+1)}】还未到达提现最低金币 当前金币: {money[0]} 当前余额:{rmb}')
+        result = ss.get(f'{domain}/yunonline/v1/sign_info?time={ts()}000&unionid={ysm_uid}').json()
         if result['errcode'] == 0:
             pass
         else:
             print (f'当前账号【{str(index+1)}】:获取用户信息失败，账号异常')
-        result = ss.get(f'http://1693464284.sethlee.top/yunonline/v1/hasWechat?unionid={ysm_uid}').json()
+        result = ss.get(f'{domain}/yunonline/v1/hasWechat?unionid={ysm_uid}').json()
         if result['errcode'] == 0:
             pass
         else:
             print (f'当前账号【{str(index+1)}】:获取用户信息失败，账号异常')
-        result = ss.get(f'http://1693464284.sethlee.top/yunonline/v1/gold?unionid={ysm_uid}&time={ts()}000').json()
+        result = ss.get(f'{domain}/yunonline/v1/gold?unionid={ysm_uid}&time={ts()}000').json()
         if result['errcode'] == 0:
             print(f"当前账号【{str(index+1)}】:今日积分: {result['data']['day_gold']} 已阅读: {result['data']['day_read']}篇 剩余: {result['data']['remain_read']}篇")
         else:
             print (f'当前账号【{str(index+1)}】:获取用户信息失败，账号异常')
         data = {'unionid':ysm_uid}
-        result = ss.post('http://1693464284.sethlee.top/yunonline/v1/wtmpdomain',json=data).json()
+        result = ss.post(f'{domain}/yunonline/v1/wtmpdomain',json=data).json()
         uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
         print(f"获取到KEY: {uk}")
         while True:
@@ -95,10 +100,9 @@ def test(index,ck):
                     #print(f"获取到微信文章: {link}")
                     link = re.findall('_g.msg_link = "(.*?)"',l_result)[0]
                     # 过检测
-                    check = check_status(ck['ts'],link)
+                    check = check_status(ck['ts'],link,index)
                     if check == True:
                         print(f"当前账号【{str(index+1)}】:检测文章-过检测成功啦!")
-                        time.sleep(s)
                         r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
                         if r_result['errcode'] == 0:
                             print(f"当前账号【{str(index+1)}】阅读已完成: 获得{r_result['data']['gold']}积分")
@@ -125,8 +129,9 @@ def test(index,ck):
                     break
 
 
-def check_status(key,link):
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+def check_status(key,link,index):
+    time.sleep(index)
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
     time.sleep(30)
