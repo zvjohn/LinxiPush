@@ -35,8 +35,8 @@ def test(index,ck):
     result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
     if signid == []:
-        print (f'当前账号【{str(index+1)}】:初始化失败,账号异常')
-        exit()
+        print (f'当前账号【{str(index+1)}】:初始化失败,请检测CK({ck['ck']})是否正确!')
+        return False
     else:
         print (f'当前账号【{str(index+1)}】:初始化成功,账号登陆成功!')
         result = ss.get(f'{domain}/yunonline/v1/exchange?unionid={ysm_uid}&request_id={signid}&qrcode_number=&addtime=').text
@@ -136,6 +136,7 @@ def check_status(key,link,index):
     print(f"手动微信阅读链接: {link}")
     time.sleep(60)
     return True
+
 
 if __name__ == '__main__':
     print("""██╗     ██╗███╗   ██╗██╗  ██╗██╗     ██╗  ██╗██╗   ██╗██╗   ██╗██████╗ 
