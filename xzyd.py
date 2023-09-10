@@ -1,6 +1,6 @@
 # Author: lindaye
 # V0.1
-# 
+# 本地和青龙二选一
 
 import requests
 import json
