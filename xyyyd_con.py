@@ -35,7 +35,7 @@ def test(index,ck):
     result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
     if signid == []:
-        print (f'当前账号【{str(index+1)}】:初始化失败,请检测CK({ck['ck']})是否正确!')
+        print (f'当前账号【{str(index+1)}】:初始化失败,请检测CK({ck["ck"]})是否正确!')
         return False
     else:
         print (f'当前账号【{str(index+1)}】:初始化成功,账号登陆成功!')
