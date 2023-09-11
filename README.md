@@ -19,6 +19,9 @@
 	WxSend("微信阅读-测试阅读", f"检测文章", "请在60s内阅读当前文章","http://baidu.com")
 > #### `Wxpusher自动检测助手`使用示例:
 > 请查看压缩包内使用文档!!!!
-#### 打赏[![pPgGqA0.png](https://s1.ax1x.com/2023/09/11/pPgGqA0.png)](https://imgse.com/i/pPgGqA0)
+
+> 打赏
+![pPgGqA0.png](https://s1.ax1x.com/2023/09/11/pPgGqA0.png)(https://imgse.com/i/pPgGqA0)
+
 ## 仅用于测试和学习研究，禁止用于商业用途，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
 ## 您必须在下载后的24小时内从计算机或手机中完全删除以上内容
