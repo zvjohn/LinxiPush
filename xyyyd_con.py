@@ -132,10 +132,10 @@ def test(index,ck):
 def check_status(key,link,index):
     print(f"当前第【{index+1}】个账号 避免并发同一时间多个推送,本次推送延迟{index}秒")
     time.sleep(index)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(60)
+    time.sleep(40)
     return True
 
 
