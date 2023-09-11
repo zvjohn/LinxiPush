@@ -108,24 +108,35 @@ def test(index,ck):
                 else:
                     print(f"当前账号【{str(index+1)}】获取文章失败,错误未知{response}")
                     break
-    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/withdraw/wechat"
+    url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/read/info"
     response = ss.get(url, headers=headers, data=get_sign()).json()
     if response["code"] == 0:
-        print(f'当前账号【{str(index+1)}】开始提现:{response["message"]}')
-    elif response["code"] == 1:
-        print(f'当前账号【{str(index+1)}】开始提现:{response["message"]}')
+        remain = response["data"]["remain"]
+        read = response["data"]["read"]
+        print(f"当前账号【{str(index+1)}】: ID:{p_value}   钢镚余额:{remain}  今日阅读量:{read} 篇  推广链接:{share_link}")
     else:
-        print(f'当前账号【{str(index+1)}】未知错误:{response}')
+        print(response["message"])
+    if remain >= 20000:
+        url = "http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud/withdraw/wechat"
+        response = ss.get(url, headers=headers, data=get_sign()).json()
+        if response["code"] == 0:
+            print(f'当前账号【{str(index+1)}】开始提现:{response["message"]}')
+        elif response["code"] == 1:
+            print(f'当前账号【{str(index+1)}】开始提现:{response["message"]}')
+        else:
+            print(f'当前账号【{str(index+1)}】未知错误:{response}')
+    else:
+        print(f'当前账号【{str(index+1)}】当前余额为{remain} 未到达2元提现限制!')
     ss.close
 
 
 def check_status(key,link,index):
     print(f"当前第【{index+1}】个账号 避免并发同一时间多个推送,本次推送延迟{index}秒")
     time.sleep(index)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
     print(f"微信消息推送: {result['msg']}")
     print(f"手动微信阅读链接: {link}")
-    time.sleep(60)
+    time.sleep(40)
     return True
 
 if __name__ == '__main__':
