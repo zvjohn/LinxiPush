@@ -13,7 +13,7 @@ import os
 from multiprocessing import Pool
 from urllib.parse import unquote,quote
 
-domain = 'http://1694168723.yxdl444.top'
+domain = 'http://1692416143.3z2rpa.top'
 
 check_list = [
     "MzkxNTE3MzQ4MQ==","Mzg5MjM0MDEwNw==","MzUzODY4NzE2OQ==","MzkyMjE3MzYxMg==","MzkxNjMwNDIzOA==","Mzg3NzUxMjc5Mg==",
