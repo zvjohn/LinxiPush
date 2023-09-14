@@ -33,7 +33,7 @@ def read(index,ck):
         # url = f'http://gcold.youhujia.top/dxyuedu/?ch=3521&callbackUrl=http%3A%2F%2Fred1.read.biwuzhaojin.com%2Fweb-read%2Fget-url%3FreadUserId%3D{id["uid"]}&t={timestamp}&rbid=11111&cb=w&host=sc0909123703.wkyvch9n2.cn'
         # result = requests.get(url).text
         # print(result)
-        print(f"当前第{str(index+1)}个账号: 阅读任务完成")
+    print(f"当前第{str(index+1)}个账号: 阅读任务完成")
     uurl = 'http://redpage230617.read.biwuzhaojin.com/web-read/read-info'
     data = f'code=null&channelId=230327002&readUserId={ck["uid"]}&sign={ck["sign"]}'
     result = requests.post(uurl,data=data,headers=headers).json()
