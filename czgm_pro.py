@@ -17,7 +17,7 @@ from urllib.parse import quote
 # 变量类型(本地/青龙)
 Btype = "本地"
 # 提现限制(元)
-Limit = "2.0"
+Limit = 2
 # 充值购买(钢镚)域名(无法使用时请更换)
 domain = 'http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud'
 # 检测文章列表(如有未收录可自行添加)
@@ -136,7 +136,7 @@ def get_money(i,ck):
         remain = response["data"]["remain"]
     else:
         print(f'账号【{str(i+1)}】获取用户信息失败: {response["message"]}')
-    if remain >= 20000:
+    if remain >= Limit*10000:
         response = ss.get(domain+"/withdraw/wechat", headers=headers, data=get_sign()).json()
         if response["code"] == 0:
             print(f'账号【{str(i+1)}】开始提现:{response["message"]}')
