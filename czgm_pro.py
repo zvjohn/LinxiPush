@@ -15,7 +15,7 @@ import json
 from urllib.parse import quote
 
 # 变量类型(本地/青龙)
-Btype = "本地"
+Btype = "青龙"
 # 提现限制(元)
 Limit = 2
 # 充值购买(钢镚)域名(无法使用时请更换)
