@@ -1,5 +1,5 @@
 # Author: lindaye
-# V1.1.6 Update:2023-09-10
+# V1.1.6 Update:2023-09-15
 # 活动入口：http://2496831.sl4mwis5.gbl.avc14qvjzax7.cloud/?p=2496831
 # 变量gbtoken 值{"ck":"gfsessionid的值","ts":"Wxpusher的UID"} 一行一个
 # 内置ck方法ck_token = [{"ck":"gfsessionid的值","ts":"Wxpusher的UID"},{"ck":"gfsessionid的值","ts":"Wxpusher的UID"}]
