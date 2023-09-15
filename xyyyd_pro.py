@@ -147,9 +147,9 @@ def get_money(i,ck):
         else:
             rmb = re.findall(r'money = (.*?);',result)[0]
             if int(money[0]) >= 3000:
-                money = (int(money[0]) // 3000) * 3000
-                # print(f"账号【{str(i+1)}】提交体现金币: {money}")
-                t_data = {'unionid':ysm_uid,'request_id':signid,'gold':money}
+                tmoney = (int(money[0]) // 3000) * 3000
+                # print(f"账号【{str(i+1)}】提交体现金币: {tmoney}")
+                t_data = {'unionid':ysm_uid,'request_id':signid,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
