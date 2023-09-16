@@ -139,9 +139,9 @@ def get_money(i,ck):
     if remain >= Limit*10000:
         response = ss.get(domain+"/withdraw/wechat", headers=headers, data=get_sign()).json()
         if response["code"] == 0:
-            print(f'账号【{str(i+1)}】开始提现2元:{response["message"]}')
+            print(f'账号【{str(i+1)}】开始提现: 金额{int(str(remain)[:2])/10}-{response["message"]}')
         elif response["code"] == 1:
-            print(f'账号【{str(i+1)}】开始提现2元:{response["message"]}')
+            print(f'账号【{str(i+1)}】开始提现: 金额{int(str(remain)[:2])/10}-{response["message"]}')
         else:
             print(f'账号【{str(i+1)}】未知错误:{response}')
     else:
