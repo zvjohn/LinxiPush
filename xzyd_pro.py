@@ -3,7 +3,6 @@
 # 小啄阅读
 # 本地和青龙二选一
 # 低保项目0.3/天
-# 入口:http://redpage230617.read.biwuzhaojin.com/web-read/read?channelId=230327002
 # 跳转到浏览器复制URL,提取里面的readUserid以及sign填入下面uid和sign即可
 # 本地请在脚本最下方添加示例:{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}到本地变量ck_token
 # 建议一天执行两次(或许有意外之喜)
