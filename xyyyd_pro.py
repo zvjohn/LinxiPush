@@ -152,7 +152,7 @@ def get_money(i,ck):
                 # print(f"账号【{str(i+1)}】提交体现金币: {tmoney}")
                 t_data = {'unionid':ysm_uid,'request_id':signid,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
-                money = money - 3000
+                money = int(money) - 3000
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
