@@ -3,6 +3,7 @@
 # 活动入口：https://sd8690.viptaoyou.top:10261/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=sd8690.viptaoyou.top:10261&codeuserid=2&time=1694212129
 # 变量xyytoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"} 一行一个
 # 内置ck方法ck_token = [{"ck":"ysm_uid的值","ts":"Wxpusher的UID"},{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}]
+# 开启devid设备id变量值为{"ck":"ysm_uid的值","ts":"Wxpusher的UID","did":"xxxx"}
 # 先扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 import requests
 import json
@@ -67,6 +68,10 @@ def user_info(i,ck):
 def do_read(i,ck):
     # 保持连接,重复利用
     ss = requests.session()
+    if 'did' in ck:
+        Did_data=f"unionid={ck['ck']}&devid={ck['did']}"
+        Did_R = ss.post( domain+'/yunonline/v1/devtouid',data=Did_data)
+        print(f"账号【{str(i+1)}】模拟上传设备指纹: {ck['did']}")
     data = {'unionid':ck['ck']}
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
