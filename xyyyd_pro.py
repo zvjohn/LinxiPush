@@ -145,18 +145,20 @@ def get_money(i,ck):
         if money == []:
             print (f'账号【{str(i+1)}】金币获取失败,账号异常')
         else:
+            money = money[0]
             rmb = re.findall(r'money = (.*?);',result)[0]
-            if int(money[0]) >= 3000:
-                tmoney = (int(money[0]) // 3000) * 3000
+            if int(money) >= 3000:
+                tmoney = (int(money) // 3000) * 3000
                 # print(f"账号【{str(i+1)}】提交体现金币: {tmoney}")
                 t_data = {'unionid':ysm_uid,'request_id':signid,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
+                money = money - 3000
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
                 print(f"账号【{str(i+1)}】余额满足2元体现结果: {j_result['msg']}")
             else:
-                print(f"账号【{str(i+1)}】余额小于2元暂不提现! 当前金币: {money[0]} 当前余额:{rmb}")
+                print(f"账号【{str(i+1)}】余额小于2元暂不提现! 当前金币: {money} 当前余额:{rmb}")
            
 
 # 微信推送模块
