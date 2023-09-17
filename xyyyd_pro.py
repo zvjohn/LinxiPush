@@ -20,11 +20,7 @@ Btype = "青龙"
 # 提现限制(元)
 Limit = 2
 # 授权设备ID
-if os.getenv('imei') == None:
-    print('青龙变量异常: 请添加imei变量,本次未开启回调')
-    imei = ""
-else:
-    imei = os.getenv('imei')
+imei = os.getenv('imei')
 # 小阅阅读域名(无法使用时请更换)
 domain = 'http://1692416143.3z2rpa.top'
 # 检测文章列表(如有未收录可自行添加)
