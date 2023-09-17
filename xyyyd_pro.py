@@ -183,8 +183,10 @@ def check_status(key,link,index):
         for i in range(10):
             result = requests.get(f"https://linxi-send.run.goorm.app/select_task/{imei}/{uuid}").json()
             if result['code'] == 200:
+                result = requests.get(f"https://linxi-send.run.goorm.app/delete_task/{imei}/{uuid}").json()
                 return True
             time.sleep(4)
+        result = requests.get(f"https://linxi-send.run.goorm.app/delete_task/{imei}/{uuid}").json()
         return False
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
