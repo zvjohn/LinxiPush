@@ -4,6 +4,7 @@
 # 变量gbtoken 值{"ck":"gfsessionid的值","ts":"Wxpusher的UID"} 一行一个
 # 内置ck方法ck_token = [{"ck":"gfsessionid的值","ts":"Wxpusher的UID"},{"ck":"gfsessionid的值","ts":"Wxpusher的UID"}]
 # 先扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+# 回调服务器：青龙运行添加imei变量,本地运行修改imei = ""为真实设备ID
 import requests
 from multiprocessing import Pool
 import re
@@ -18,6 +19,12 @@ from urllib.parse import quote
 Btype = "青龙"
 # 提现限制(元)
 Limit = 2
+# 授权设备ID
+if os.getenv('imei') == None:
+    print('青龙变量异常: 请添加imei变量,本次未开启回调')
+    imei = ""
+else:
+    imei = os.getenv('imei')
 # 充值购买(钢镚)域名(无法使用时请更换)
 domain = 'http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud'
 # 检测文章列表(如有未收录可自行添加)
@@ -50,16 +57,16 @@ def user_info(i,ck):
         share_link = result["data"]["share_link"][0]
         userid = share_link.split("=")[1].split("&")[0]
     except:
-        print(f"账号【{str(i+1)}】请检查你的CK({ck['ck']})是否正确!")
+        print(f"账号【{i+1}】请检查你的CK({ck['ck']})是否正确!")
         ss.close
         return False
     result = ss.get(domain+"/read/info", headers=headers, data=get_sign()).json()
     if result["code"] == 0:
         remain = result["data"]["remain"]
         read = result["data"]["read"]
-        print(f"账号【{str(i+1)}】UID:{userid} 余额:{remain} 今日:{read}篇 推广:{share_link}")
+        print(f"账号【{i+1}】UID:{userid} 余额:{remain} 今日:{read}篇 推广:{share_link}")
     else:
-        print(f'账号【{str(i+1)}】用户信息获取失败:{result["message"]}')
+        print(f'账号【{i+1}】用户信息获取失败:{result["message"]}')
     ss.close
 
 # 阅读文章模块
@@ -75,27 +82,29 @@ def do_read(i,ck):
         response = ss.get(domain+"/read/task", headers=headers, data=get_sign()).json()
         if response["code"] == 1:
             if "秒" in response['message']:
-                print(f"账号【{str(i+1)}】即将开始:{response['message']}")
+                print(f"账号【{i+1}】即将开始:{response['message']}")
                 time.sleep(5)
+            elif response['message'] == "记录失效":
+                print(f"账号【{i+1}】阅读异常,重新获取:{response['message']}")
             else:
-                print(f"账号【{str(i+1)}】{response['message']}")
+                print(f"账号【{i+1}】{response['message']}")
                 break
         else:
             try:
                 s = random.randint(10,12)
                 # 检测是否是检测文章
                 biz = re.findall("biz=(.*?)&",response["data"]["link"])[0]
-                print(f"账号【{str(i+1)}】获取文章成功-{biz}-模拟{s}秒")
+                print(f"账号【{i+1}】获取文章成功-{biz}-模拟{s}秒")
                 if biz in check_list:
-                    print(f"账号【{str(i+1)}】阅读检测文章-已推送微信,请40s内完成验证!")
+                    print(f"账号【{i+1}】阅读检测文章-已推送微信,请40s内完成验证!")
                     # 过检测
                     check = check_status(ck['ts'],response["data"]["link"],i)
                     if check == True:
-                        print(f"账号【{str(i+1)}】检测文章-过检测成功啦!")
+                        print(f"账号【{i+1}】检测文章-过检测成功啦!")
                         response = ss.post(domain+"/read/finish", headers=headers, data=get_sign()).json()
-                        print(f'账号【{str(i+1)}】阅读文章成功-获得钢镚[{response["data"]["gain"]}]-已读{response["data"]["read"]}篇')
+                        print(f'账号【{i+1}】阅读文章成功-获得钢镚[{response["data"]["gain"]}]-已读{response["data"]["read"]}篇')
                     else:
-                        print(f"账号【{str(i+1)}】检测文章-过检测失败啦!")
+                        print(f"账号【{i+1}】检测文章-过检测失败啦!")
                         break
                 else:
                     time.sleep(s)
@@ -103,22 +112,22 @@ def do_read(i,ck):
                     # print(response)
                     if response["code"] == 0:
                         if response["data"]["check"] is False:
-                            print(f'账号【{str(i+1)}】阅读文章成功-获得钢镚[{response["data"]["gain"]}]-已读{response["data"]["read"]}篇')
+                            print(f'账号【{i+1}】阅读文章成功-获得钢镚[{response["data"]["gain"]}]-已读{response["data"]["read"]}篇')
                         else:
-                            print(f"账号【{str(i+1)}】获取到未收录检测: {biz} 将自动停止脚本")
+                            print(f"账号【{i+1}】获取到未收录检测: {biz} 将自动停止脚本")
                             break
                     else:
                         if response['message'] == "记录无效":
-                            print(f"账号【{str(i+1)}】记录无效,重新阅读")
+                            print(f"账号【{i+1}】记录无效,重新阅读")
                         else:
-                            print(f"账号【{str(i+1)}】{response}")
+                            print(f"账号【{i+1}】{response}")
                             break
             except KeyError:
                 if response['code'] == 801:
-                    print(f"账号【{str(i+1)}】今日任务已完成: {response['message']}")
+                    print(f"账号【{i+1}】今日任务已完成: {response['message']}")
                     break
                 else:
-                    print(f"账号【{str(i+1)}】获取文章失败,错误未知{response}")
+                    print(f"账号【{i+1}】获取文章失败,错误未知{response}")
                     break
     ss.close
 
@@ -135,28 +144,42 @@ def get_money(i,ck):
     if response["code"] == 0:
         remain = response["data"]["remain"]
     else:
-        print(f'账号【{str(i+1)}】获取用户信息失败: {response["message"]}')
+        print(f'账号【{i+1}】获取用户信息失败: {response["message"]}')
     if remain >= Limit*10000:
         response = ss.get(domain+"/withdraw/wechat", headers=headers, data=get_sign()).json()
         if response["code"] == 0:
-            print(f'账号【{str(i+1)}】开始提现: 金额{int(str(remain)[:2])/10}-{response["message"]}')
+            print(f'账号【{i+1}】开始提现:{response["message"]}')
         elif response["code"] == 1:
-            print(f'账号【{str(i+1)}】开始提现: 金额{int(str(remain)[:2])/10}-{response["message"]}')
+            print(f'账号【{i+1}】开始提现:{response["message"]}')
         else:
-            print(f'账号【{str(i+1)}】未知错误:{response}')
+            print(f'账号【{i+1}】未知错误:{response}')
     else:
-        print(f'账号【{str(i+1)}】当前余额为{remain} 未到达2元提现限制!')
+        print(f'账号【{i+1}】当前余额为{remain} 未到达2元提现限制!')
     ss.close
 
 # 微信推送模块
 def check_status(key,link,index):
-    print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-    time.sleep(index*2)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-    print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
-    # print(f"手动微信阅读链接: {link}")
-    time.sleep(30)
-    return True
+    if imei != "":
+        result = requests.post("https://linxi-send.run.goorm.app/create_task",json={"imei":imei}).json()
+        uuid = result['uuid']
+        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+        time.sleep(index*2)
+        result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        for i in range(10):
+            result = requests.get(f"https://linxi-send.run.goorm.app/select_task/{imei}/{uuid}").json()
+            if result['code'] == 200:
+                return True
+            time.sleep(4)
+        return False
+    else:
+        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+        time.sleep(index*2)
+        result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        #print(f"手动微信阅读链接: {link}")
+        time.sleep(30)
+        return True
 
 
 if __name__ == "__main__":
@@ -199,5 +222,5 @@ if __name__ == "__main__":
         pool.join()
 
         # 输出结果
-        print("================[钢镚阅读V1.1.8]===============")
+        print("================[钢镚阅读V1.1.9]===============")
 
