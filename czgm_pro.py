@@ -20,11 +20,7 @@ Btype = "青龙"
 # 提现限制(元)
 Limit = 2
 # 授权设备ID
-if os.getenv('imei') == None:
-    print('青龙变量异常: 请添加imei变量,本次未开启回调')
-    imei = ""
-else:
-    imei = os.getenv('imei')
+imei = ""
 # 充值购买(钢镚)域名(无法使用时请更换)
 domain = 'http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud'
 # 检测文章列表(如有未收录可自行添加)
@@ -204,7 +200,11 @@ if __name__ == "__main__":
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
-
+    if os.getenv('imei') == None:
+        #print('青龙变量异常: 请添加imei变量,本次未开启回调')
+        imei = ""
+    else:
+        imei = os.getenv('imei')
     # 创建进程池
     with Pool() as pool:
         # 并发执行函数
