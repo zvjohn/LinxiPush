@@ -117,6 +117,8 @@ def do_read(i,ck):
                     r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
                     if r_result['errcode'] == 0:
                         print(f"账号【{str(i+1)}】阅读已完成: 获得{r_result['data']['gold']}积分 剩余{r_result['data']['remain_read']}篇")
+                    elif r_result['msg'] == "本次阅读无效":
+                        print(f"账号【{i+1}】检测异常重新获取:{r_result}")
                     else:
                         print(f"账号【{str(i+1)}】阅读失败,获取到未收录检测BIZ:{biz}")
                         print(f"账号【{str(i+1)}】阅读异常:{r_result}")
