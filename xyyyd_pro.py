@@ -183,7 +183,7 @@ def check_status(key,link,index):
         uuid = result['uuid']
         print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
@@ -228,10 +228,11 @@ if __name__ == "__main__":
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
+    print("==================回调验证服务=================")
     if imei:
         print(f"[回调服务器]:已启用-[授权ID:{imei}]")
     else:
-        print(f"[回调服务器]:未启用-[变量ID:{imei}]")
+        print(f"[回调服务器]:未启用-[变量ID:{imei}]")  
     # 创建进程池
     with Pool() as pool:
         # 并发执行函数
