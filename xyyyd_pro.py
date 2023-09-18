@@ -188,13 +188,13 @@ def check_status(key,link,index):
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
             if result['code'] == 200:
-                print(result)
+                print(f"账号【{str(index+1)}】服务器回调结果:{result['msg']}")
                 result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
-                print(result)
+                print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
                 return True
             time.sleep(4)
         result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
-        print(result)
+        print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
         return False
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
