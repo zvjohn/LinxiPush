@@ -210,7 +210,10 @@ if __name__ == "__main__":
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
-            
+    if imei:
+        print(f"[回调服务器]:已启用-[授权ID:{imei}]")
+    else:
+        print(f"[回调服务器]:未启用-[变量ID:{imei}]")    
     # 创建进程池
     with Pool() as pool:
         # 并发执行函数
