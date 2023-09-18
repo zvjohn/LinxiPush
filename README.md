@@ -7,16 +7,49 @@
 #### 特此感谢[@benjaminwan](https://gitee.com/benjaminwan) 大佬的开源项目:[https://gitee.com/benjaminwan/ocr-lite-ncnn](https://gitee.com/benjaminwan/ocr-lite-ncnn)
 > #### `Wxpusher`推送使用示例:
 
-    import requests
-	import urllib.parse
-	wxname = 'xxx' # 获取UID 扫码获取 https://wxpusher.zjiecode.com/demo/
-	# 微信推送
-	def WxSend(project, status, content,turl):
-    	turl = urllib.parse.quote(turl)
-    	result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{wxname}?content={status}-{project}%0A{content}%0A%3Cbody+onload%3D%22window.location.href%3D%27{turl}%27%22%3E').json()
-    	print(f"微信消息推送: {result['msg']}")
-
-	WxSend("微信阅读-测试阅读", f"检测文章", "请在60s内阅读当前文章","http://baidu.com")
+   	import requests
+	import time
+	from urllib.parse import quote
+	
+	imei = "LID"
+	UID = "UID_XXXX"
+	
+	# 微信推送模块
+	def check_status(key,link,index):
+	    ss = requests.session()
+	    if ss.get("https://linxi-send.run.goorm.app").status_code ==200:
+	        callback = "https://linxi-send.run.goorm.app"
+	    else:
+	        callback = "https://auth.linxi.tk"
+	    if imei != None:
+	        result = ss.post(callback+"/create_task",json={"imei":imei}).json()
+	        uuid = result['uuid']
+	        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+	        time.sleep(index*2)
+	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+	        for i in range(10):
+	            result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
+	            if result['code'] == 200:
+	                print(result)
+	                result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
+	                print(result)
+	                return True
+	            time.sleep(4)
+	        result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
+	        print(result)
+	        return False
+	    else:
+	        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+	        time.sleep(index*2)
+	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+	        #print(f"手动微信阅读链接: {link}")
+	        time.sleep(30)
+	        return True
+	
+	check = check_status(UID,"http://baidu.com",1)
+	print(check)
 > #### `Wxpusher自动检测助手`使用示例:
 > 请查看压缩包内使用文档!!!!
 
