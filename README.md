@@ -10,8 +10,9 @@
    	import requests
 	import time
 	from urllib.parse import quote
-	
-	imei = "LID"
+ 
+	# 授权用户的LID
+	imei = None # imei = "LID"
 	UID = "UID_XXXX"
 	
 	# 微信推送模块
