@@ -178,7 +178,7 @@ def check_status(key,link,index):
         callback = "https://linxi-send.run.goorm.app"
     else:
         callback = "https://auth.linxi.tk"
-    if imei != "":
+    if imei != None:
         result = ss.post(callback+"/create_task",json={"imei":imei}).json()
         uuid = result['uuid']
         print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
