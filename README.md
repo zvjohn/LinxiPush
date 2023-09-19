@@ -27,7 +27,7 @@
 	        uuid = result['uuid']
 	        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
 	        time.sleep(index*2)
-	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-测试阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
 	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
 	        for i in range(10):
 	            result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
@@ -43,7 +43,7 @@
 	    else:
 	        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
 	        time.sleep(index*2)
-	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-测试阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
 	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
 	        #print(f"手动微信阅读链接: {link}")
 	        time.sleep(30)
