@@ -20,7 +20,7 @@ from urllib.parse import quote
 Btype = "青龙"
 # 提现限制(元)
 Limit = 2
-# 授权设备ID
+# 授权设备ID(软件版本>=1.3.3)
 imei = os.getenv('LID')
 # 充值购买(钢镚)域名(无法使用时请更换)
 domain = 'http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud'
