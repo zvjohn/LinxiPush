@@ -5,7 +5,7 @@
 # 内置ck方法ck_token = [{"ck":"ysm_uid的值","ts":"Wxpusher的UID"},{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}]
 # 开启devid设备id变量值为{"ck":"ysm_uid的值","ts":"Wxpusher的UID","did":"xxxx"}
 # 先扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 回调服务器：青龙运行填写imei变量,本地运行修改imei = ""为真实设备ID
+# 回调服务器：青龙运行添加LID变量,本地运行修改imei = "xxx(LID值)"为真实设备ID
 version = "1.1.9"
 import requests
 import json
