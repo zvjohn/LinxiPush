@@ -20,7 +20,7 @@ from urllib.parse import quote
 Btype = "青龙"
 # 提现限制(元)
 Limit = 2
-# 授权设备ID
+# 授权设备ID(软件版本>=1.3.3)
 imei = os.getenv('LID')
 # 小阅阅读域名(无法使用时请更换)
 domain = 'http://1692416143.3z2rpa.top'
