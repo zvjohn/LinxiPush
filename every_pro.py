@@ -15,6 +15,8 @@ from urllib.parse import quote
 Btype = "青龙"
 # 提现限制(元)
 # Limit = 0
+# 授权设备ID(软件版本>=1.3.3)
+imei = os.getenv('LID')
 # 人人帮阅读域名(无法使用时请更换)
 domain = 'http://ebb.vinse.cn/api'
 
@@ -159,13 +161,37 @@ def get_money(i,ck):
 
 # 微信推送模块
 def check_status(key,link,index):
-    print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-    time.sleep(index*2)
-    result = requests.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-人人帮阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-    print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
-    # print(f"手动微信阅读链接: {link}")
-    time.sleep(30)
-    return True
+    ss = requests.session()
+    if ss.get("https://linxi-send.run.goorm.app").status_code ==200:
+        callback = "https://linxi-send.run.goorm.app"
+    else:
+        callback = "https://auth.linxi.tk"
+    if imei != None:
+        result = ss.post(callback+"/create_task",json={"imei":imei}).json()
+        uuid = result['uuid']
+        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+        time.sleep(index*2)
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        for i in range(10):
+            result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
+            if result['code'] == 200:
+                print(f"账号【{str(index+1)}】服务器回调结果:{result['msg']}")
+                result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
+                print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
+                return True
+            time.sleep(4)
+        result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
+        print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
+        return False
+    else:
+        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+        time.sleep(index*2)
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        #print(f"手动微信阅读链接: {link}")
+        time.sleep(30)
+        return True
 
 
 if __name__ == "__main__":
