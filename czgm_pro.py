@@ -4,7 +4,7 @@
 # 变量gbtoken 值{"ck":"gfsessionid的值","ts":"Wxpusher的UID"} 一行一个
 # 内置ck方法ck_token = [{"ck":"gfsessionid的值","ts":"Wxpusher的UID"},{"ck":"gfsessionid的值","ts":"Wxpusher的UID"}]
 # 先扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 回调服务器：青龙运行添加imei变量,本地运行修改imei = ""为真实设备ID
+# 回调服务器：青龙运行添加LID变量,本地运行修改imei = "xxx(LID值)"为真实设备ID
 version = "1.1.9"
 import requests
 from multiprocessing import Pool
