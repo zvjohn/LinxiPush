@@ -5,7 +5,7 @@
 ## 全自动过检测`Wxpusher全自动过检测工具兼容版 V1.1` 全英文路径
 #### 特此感谢[@zh-h](https://github.com/zh-h) 大佬的开源项目:[https://github.com/zh-h/Windows.Media.Ocr.Cli](https://github.com/zh-h/Windows.Media.Ocr.Cli)
 #### 特此感谢[@benjaminwan](https://gitee.com/benjaminwan) 大佬的开源项目:[https://gitee.com/benjaminwan/ocr-lite-ncnn](https://gitee.com/benjaminwan/ocr-lite-ncnn)
-> #### `Wxpusher`推送使用示例:
+> #### `Wxpusher`推送使用示例(请先用此demo进行测试):
 
    	import requests
 	import time
@@ -55,7 +55,6 @@
 > 请查看压缩包内使用文档!!!!
 
 > 打赏
-![pPgGqA0.png](https://s1.ax1x.com/2023/09/11/pPgGqA0.png)
 
 ## 仅用于测试和学习研究，禁止用于商业用途，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
 ## 您必须在下载后的24小时内从计算机或手机中完全删除以上内容
