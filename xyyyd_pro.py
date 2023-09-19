@@ -185,8 +185,8 @@ def get_money(i,ck):
 # 微信推送模块
 def check_status(key,link,index):
     ss = requests.session()
-    if ss.get("https://linxi-send.run.goorm.app").status_code ==200:
-        callback = "https://linxi-send.run.goorm.app"
+    if ss.get("https://linxi-send.run.goorm.io").status_code ==200:
+        callback = "https://linxi-send.run.goorm.io"
     else:
         callback = "https://auth.linxi.tk"
     if imei != None:
