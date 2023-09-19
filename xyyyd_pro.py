@@ -85,7 +85,11 @@ def do_read(i,ck):
     uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
     print(f"账号【{i+1}】获取到KEY: {uk}")
     while True:
-            result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}').json()
+            temp_headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309062f) XWEB/8391 Flue',
+                'Origin': 'https://c1695090073-1256911967.cos.ap-beijing.myqcloud.com',
+            }
+            result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers).json()
             if result['errcode'] == 0:
                 link = result['data']['link']
                 l_result = ss.get(link,headers=headers).text
@@ -107,7 +111,7 @@ def do_read(i,ck):
                     check = check_status(ck['ts'],link,i)
                     if check == True:
                         print(f"账号【{i+1}】检测文章-过检测成功啦!")
-                        r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
+                        r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}',headers=temp_headers).json()
                         if r_result['errcode'] == 0:
                             print(f"账号【{i+1}】阅读已完成: 获得{r_result['data']['gold']}积分 剩余{r_result['data']['remain_read']}篇")
                         elif r_result['msg'] == "本次阅读无效":
@@ -120,7 +124,7 @@ def do_read(i,ck):
                         break
                 else:
                     time.sleep(s)
-                    r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}').json()
+                    r_result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/get_read_gold?uk={uk}&time={s}&timestamp={ts()}',headers=temp_headers).json()
                     if r_result['errcode'] == 0:
                         print(f"账号【{i+1}】阅读已完成: 获得{r_result['data']['gold']}积分 剩余{r_result['data']['remain_read']}篇")
                     else:
@@ -134,6 +138,7 @@ def do_read(i,ck):
                     print (f"账号【{i+1}】阅读提醒: {result['msg']}")
                     break
     ss.close
+
 
 
 # 提现模块
