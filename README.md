@@ -11,8 +11,8 @@
 	import time
 	from urllib.parse import quote
  
-	# 授权用户的LID
-	imei = None # imei = "LID"
+	# 授权设备LID(软件版本>=1.3.3)
+	imei = "XXXX" # 没有LID请填写imei = None
 	UID = "UID_XXXX"
 	
 	# 微信推送模块
@@ -53,7 +53,7 @@
 	print(check)
 > #### `Wxpusher自动检测助手`使用示例:
 > 请查看压缩包内使用文档!!!!
-
+<img src="zsm.png" alt="打赏" width="300px" height="300px"/>
 > 打赏
 
 ## 仅用于测试和学习研究，禁止用于商业用途，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
