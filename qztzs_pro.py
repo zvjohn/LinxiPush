@@ -13,7 +13,7 @@ from multiprocessing import Pool
 Btype = "青龙"
 # 提现限制(元)
 # Limit = 0
-# 小啄阅读域名(无法使用时请更换)
+# 泉站桶装水域名(无法使用时请更换)
 domain = 'https://admin.dtds888.com/api/index'
 
 headers = {
