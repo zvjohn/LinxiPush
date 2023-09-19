@@ -89,7 +89,12 @@ def do_read(i,ck):
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309062f) XWEB/8391 Flue',
                 'Origin': 'https://c1695090073-1256911967.cos.ap-beijing.myqcloud.com',
             }
-            result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers).json()
+            result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
+            if result.text == "":
+                print(f"账号【{i+1}】检测到账号已被封禁,自动停止当前操作!")
+                return False
+            else:
+                result = result.json()
             if result['errcode'] == 0:
                 link = result['data']['link']
                 l_result = ss.get(link,headers=headers).text
