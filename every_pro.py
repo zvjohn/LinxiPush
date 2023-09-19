@@ -1,6 +1,7 @@
 # Author: lindaye
 # 人人帮阅读
 # 入口:http://ebb.useradmin.cloud/user/index.html?mid=1703917033462300672
+# 回调服务器：青龙运行添加LID变量,本地运行修改imei = "xxx(LID值)"为真实设备ID
 version = "0.0.2"
 import requests
 import json
