@@ -1,11 +1,19 @@
 # Author: lindaye
-# Update:2023-09-17
+# Update:2023-09-20
+# 小阅阅阅读
 # 活动入口：https://sd8690.viptaoyou.top:10261/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=sd8690.viptaoyou.top:10261&codeuserid=2&time=1694212129
-# 变量xyytoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"} 一行一个
-# 内置ck方法ck_token = [{"ck":"ysm_uid的值","ts":"Wxpusher的UID"},{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}]
-# 开启devid设备id变量值为{"ck":"ysm_uid的值","ts":"Wxpusher的UID","did":"xxxx"}
-# 先扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
-# 回调服务器：青龙运行添加LID变量,本地运行修改imei = "xxx(LID值)"为真实设备ID
+# 添加账号说明(青龙/本地)二选一
+#   青龙: 青龙变量xyytoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"} 一行一个(回车分割)
+#   本地: 脚本内置ck方法ck_token = [{"ck":"ysm_uid的值","ts":"Wxpusher的UID"},{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}]
+# 脚本使用说明:
+#   1.(必须操作)扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+#   2.在1打开的网页中点击发送文本消息,查看是否收到,收到可继续
+#   3.将1打开的网页中的UID或者以及操作过1的账号UID复制备用
+#   4.根据提示说明填写账号变量
+# 回调服务器开放说明:
+#   1.仅针对授权用户开放,需配合授权软件使用
+#   2.青龙变量设置LID变量名,值为授权软件的LID
+# 软件版本
 version = "1.1.9"
 import requests
 import json
@@ -24,6 +32,8 @@ Limit = 2
 imei = os.getenv('LID')
 # 小阅阅读域名(无法使用时请更换)
 domain = 'http://1692416143.3z2rpa.top'
+# 保持连接,重复利用
+ss = requests.session()
 # 检测文章列表(如有未收录可自行添加)
 check_list = [
     "MzkxNTE3MzQ4MQ==","Mzg5MjM0MDEwNw==","MzUzODY4NzE2OQ==","MzkyMjE3MzYxMg==","MzkxNjMwNDIzOA==","Mzg3NzUxMjc5Mg==",
@@ -36,12 +46,10 @@ def ts ():
 
 # 获取个人信息模块
 def user_info(i,ck):
-    # 保持连接,重复利用
-    ss = requests.session()
     ysm_uid = ck['ck']
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
-        'Cookie':f"ysm_uid={ysm_uid}"
+        'Cookie':f"ysm_uid={ysm_uid}",
     }
     result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
@@ -70,8 +78,6 @@ def user_info(i,ck):
 
 # 阅读文章模块
 def do_read(i,ck):
-    # 保持连接,重复利用
-    ss = requests.session()
     if 'did' in ck:
         Did_data=f"unionid={ck['ck']}&devid={ck['did']}"
         Did_R = ss.post( domain+'/yunonline/v1/devtouid',data=Did_data)
@@ -91,7 +97,7 @@ def do_read(i,ck):
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
             if result.text == "":
-                print(f"账号【{i+1}】检测到账号已被封禁,自动停止当前操作!")
+                print(f"账号【{i+1}】检测到账号已被封禁或CK错误,自动停止当前操作!")
                 return False
             else:
                 result = result.json()
@@ -142,14 +148,10 @@ def do_read(i,ck):
                 else:
                     print (f"账号【{i+1}】阅读提醒: {result['msg']}")
                     break
-    ss.close
-
 
 
 # 提现模块
 def get_money(i,ck):
-    # 保持连接,重复利用
-    ss = requests.session()
     ysm_uid = ck['ck']
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
@@ -184,7 +186,6 @@ def get_money(i,ck):
 
 # 微信推送模块
 def check_status(key,link,index):
-    ss = requests.session()
     if ss.get("https://linxi-send.run.goorm.io").status_code ==200:
         callback = "https://linxi-send.run.goorm.io"
     else:
@@ -234,16 +235,15 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxxxxx","ts":"UID_xxxxxx"},
-            {"ck":"xxxxxxx","ts":"UID_xxxxxx"}
+            {"ck":"xxxx","ts":"xxxx"}
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
-    print("==================回调验证服务=================")
+    print("==================回调服务器状态=================")
     if imei:
         print(f"[回调服务器]:已启用-[授权ID:{imei}]")
     else:
-        print(f"[回调服务器]:未启用-[变量ID:{imei}]")  
+        print(f"[回调服务器]:未启用-[变量ID:{imei}]")
     # 创建进程池
     with Pool() as pool:
         # 并发执行函数
@@ -260,5 +260,7 @@ if __name__ == "__main__":
         # 等待所有子进程执行完毕
         pool.join()
 
+        # 关闭连接
+        ss.close
         # 输出结果
         print(f"================[小阅阅读V{version}]===============")
