@@ -1,8 +1,8 @@
 # LinxiPush(`林夕微信推送助手V1.0`)
 #### 注：并发升级版本pro.py（检测更新为全手动检测40s 无回调服务器支持，可根据自己的账号数量自调check_status函数延迟时间）
 
-## 全自动过检测`Wxpusher全自动过检测工具Win10版本 V1.1`已上传。授权请联系我
-## 全自动过检测`Wxpusher全自动过检测工具兼容版 V1.1` 全英文路径
+## 全自动过检测`Wxpusher全自动过检测工具Win10+版本 V1.1`已上传。授权请私信我https://t.me/linxi110
+
 #### 特此感谢[@zh-h](https://github.com/zh-h) 大佬的开源项目:[https://github.com/zh-h/Windows.Media.Ocr.Cli](https://github.com/zh-h/Windows.Media.Ocr.Cli)
 #### 特此感谢[@benjaminwan](https://gitee.com/benjaminwan) 大佬的开源项目:[https://gitee.com/benjaminwan/ocr-lite-ncnn](https://gitee.com/benjaminwan/ocr-lite-ncnn)
 > #### `Wxpusher`推送使用示例(请先用此demo进行测试):
@@ -51,7 +51,7 @@
 	check = check_status(UID,"http://baidu.com",1)
 	print(check)
 > #### `Wxpusher自动检测助手`使用示例:
-> 请查看压缩包内使用文档!!!!
+> 暂未发布
 <img src="zsm.png" alt="打赏" width="300px" height="300px"/>
 > 打赏
 
