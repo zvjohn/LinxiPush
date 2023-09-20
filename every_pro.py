@@ -1,8 +1,21 @@
 # Author: lindaye
+# Update:2023-09-20
 # 人人帮阅读
-# 入口:http://ebb.maisucaiya.cloud/user/index.html?mid=1703917033462300672&1695098839773
-# 回调服务器：青龙运行添加LID变量,本地运行修改imei = "xxx(LID值)"为真实设备ID
+# 活动入口：http://ebb.useradmin.cloud/user/index.html?mid=1703917033462300672
+# 添加账号说明(青龙/本地)二选一
+#   青龙: 青龙变量rrbtoken 值{"un":"xxx","uid":"123456","ck":"token","ts":"Wxpusher的UID"} 一行一个(回车分割)
+#   本地: 脚本内置ck方法ck_token = [{"un":"xxx","uid":"123456","ck":"token","ts":"Wxpusher的UID"},{"un":"xxx","uid":"123456","ck":"token","ts":"Wxpusher的UID"}]
+# 脚本使用说明:
+#   1.(必须操作)扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
+#   2.在1打开的网页中点击发送文本消息,查看是否收到,收到可继续
+#   3.将1打开的网页中的UID或者以及操作过1的账号UID复制备用
+#   4.根据提示说明填写账号变量
+# 回调服务器开放说明:
+#   1.仅针对授权用户开放,需配合授权软件使用
+#   2.青龙变量设置LID变量名,值为授权软件的LID
+# 软件版本
 version = "0.0.2"
+
 import requests
 import json
 import os
@@ -20,6 +33,8 @@ Btype = "青龙"
 imei = os.getenv('LID')
 # 人人帮阅读域名(无法使用时请更换)
 domain = 'http://ebb.vinse.cn/api'
+# 保持连接,重复使用
+ss = requests.session()
 
 check_list=['Mzg2Mzk3Mjk5NQ==']
 
@@ -32,21 +47,18 @@ def user_info(i,ck):
     headers['un'] = ck['un']
     headers['uid'] = ck['uid']
     headers['token'] = ck['ck']
-    ss = requests.session()
-    result = ss.post(domain+"/user/sign", headers=headers, json={"pageSize": 10}).json()
-    if result['code'] != 50:
-        # print(f"账号【{i+1}】签到成功,获得{result['result']['point']}帮豆!")
+    result = ss.post(domain+"/user/sign", headers=headers, json={"pageSize": 10}).json()['result']
+    if result != None:
+        # print(f"账号【{i+1}】签到成功,获得{result['point']}帮豆!")
         result = ss.post(domain+'/user/receiveOneDivideReward', headers=headers, json={"pageSize": 10}).json()
         # print(f"账号【{i+1} 领取一级帮豆:{result['msg']}")
         result = ss.post(domain+'/user/receiveTwoDivideReward', headers=headers, json={"pageSize": 10}).json()
         # print(f"账号【{i+1} 领取二级帮豆:{result['msg']}")
-        result = ss.post(domain+"/user/info", headers=headers, json={"pageSize": 10}).json()
-        nick_name = result['result']['nickName']
-        money = result['result']['integralCurrent']
+        result = ss.post(domain+"/user/info", headers=headers, json={"pageSize": 10}).json()['result']
+        nick_name = result['nickName']
+        money = result['integralCurrent']
         print(f"账号【{i+1}】用户: {nick_name} 帮豆: {money}")
-        ss.close
     else:
-        ss.close
         print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
         return False
 
@@ -57,7 +69,6 @@ def do_read(i,ck):
         headers['un'] = ck['un']
         headers['uid'] = ck['uid']
         headers['token'] = ck['ck']
-        ss = requests.session()
         result=ss.get(f"https://u.cocozx.cn/ipa/read/getEntryUrl?fr=ebb0726&uid={ck['uid']}",headers=headers).json()
         link=result['result']['url']
         if link==None or link=='':
@@ -136,9 +147,7 @@ def do_read(i,ck):
                             print(f"账号【{i+1}】阅读异常,尝试重新阅读")
             else:
                 print(f"账号【{i+1}】获取阅读文章失败:{result['msg']}")
-                ss.close
                 break
-        ss.close
     except requests.exceptions.ConnectionError as e:
         print("网络连接错误超时:", str(e))
                     
@@ -148,21 +157,23 @@ def get_money(i,ck):
     headers['un'] = ck['un']
     headers['uid'] = ck['uid']
     headers['token'] = ck['ck']
-    result = requests.post(domain+"/user/info", headers=headers, json={"pageSize": 10}).json()['result']
-    options = [5000, 10000, 50000, 100000]  # 可选的金币列表
-    max_money = max(filter(lambda x: x < (int(result['integralCurrent'])), options), default=0)
-    if max_money > 0 :
-        result = requests.post("http://ebb.vinse.cn/apiuser/aliWd", headers=headers, json={"val": max_money, "pageSize": 10}).json()
-        if result['code'] == 0 :    
-            print(f"账号【{i+1}】提现成功 {result}")
+    result = ss.post(domain+"/user/info", headers=headers, json={"pageSize": 10}).json()['result']
+    if result != None:
+        options = [5000, 10000, 50000, 100000]  # 可选的金币列表
+        max_money = max(filter(lambda x: x < (int(result['integralCurrent'])), options), default=0)
+        if max_money > 0 :
+            result = ss.post("http://ebb.vinse.cn/apiuser/aliWd", headers=headers, json={"val": max_money, "pageSize": 10}).json()
+            if result['code'] == 0 :    
+                print(f"账号【{i+1}】提现成功 {result}")
+            else:
+                print(f"账号【{i+1}】提现失败 {result}")
         else:
-            print(f"账号【{i+1}】提现失败 {result}")
+            print(f"账号【{i+1}】不满足最低提现标准 剩余金币[{result['integralCurrent']}]")
     else:
-        print(f"账号【{i+1}】不满足最低提现标准 剩余金币[{result['integralCurrent']}]")
+        print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
 
 # 微信推送模块
 def check_status(key,link,index):
-    ss = requests.session()
     if ss.get("https://linxi-send.run.goorm.io").status_code ==200:
         callback = "https://linxi-send.run.goorm.io"
     else:
@@ -202,26 +213,30 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██╔══██╗██╔══██╗██╔══██╗
 ███████╗██║██║ ╚████║██╔╝ ██╗██║      ██║  ██║██║  ██║██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝      ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
-    项目:人人帮(0.5)       BY-林夕       Verion: {version}(并发)
+    项目:人人帮阅读       BY-林夕       Verion: {version}(并发)
     Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
         if os.getenv('rrbtoken') == None:
-            print('账号Cookie异常: 请添加rrbtoken变量示例:{"un":"xxx","uid":"123456","ck":"token","ts":"UID_sddsddsd"}')
+            print('账号Cookie异常: 请添加rrbtoken变量示例:{"un":"xxx","uid":"123456","ck":"xxxx","ts":"UID_sddsddsd"}')
             exit()
         # 变量CK列表
         ck_token = [json.loads(line) for line in os.getenv('rrbtoken').splitlines()]
     else:
         # 本地CK列表
         ck_token = [
-            {"un":"xxx","uid":"123456","ck":"token","ts":"UID_sddsddsd"}
+            {"un":"xxx","uid":"123456","ck":"token","ts":"Wxpusher的UID"}
         ]
         if ck_token == []:
-            print('账号异常: 请添加本地ck_token示例:{"un":"xxx"x,"uid":"123456","ck":"token","ts":"UID_sddsddsd"}')
-
+            print('账号异常: 请添加本地ck_token示例:{"un":"xxx"x,"uid":"123456","ck":"xxxx","ts":"UID_sddsddsd"}')
+    print("==================回调服务器状态=================")
+    if imei:
+        print(f"[回调服务器]:已启用-[授权ID:{imei}]")
+    else:
+        print(f"[回调服务器]:未启用-[变量ID:{imei}]")
     # 创建进程池
     with Pool() as pool:
-       # 并发执行函数
+        # 并发执行函数
         print("==================获取账号信息=================")
         pool.starmap(user_info, list(enumerate(ck_token)))
         print("==================开始阅读文章=================")
@@ -233,10 +248,13 @@ if __name__ == "__main__":
         print("==================开始账号提现=================")
         pool.starmap(get_money, list(enumerate(ck_token)))
 
+
         # 关闭进程池
         pool.close()
         # 等待所有子进程执行完毕
         pool.join()
 
+        # 关闭连接
+        ss.close
         # 输出结果
         print(f"================[人人帮V{version}]===============")
