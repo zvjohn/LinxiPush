@@ -5,7 +5,7 @@
 # 活动入口：TG内部群
 # 微信打开活动入口跳转到浏览器复制URL,提取里面的readUserid以及sign填入下面uid和sign即可
 # 添加账号说明(青龙/本地)二选一
-#   青龙: 青龙变量qztoken 值{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"} 一行一个(回车分割)
+#   青龙: 青龙变量xztoken 值{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"} 一行一个(回车分割)
 #   本地: 脚本内置ck方法ck_token = [{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"},{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}]
 # 软件版本
 version = "0.0.2"
