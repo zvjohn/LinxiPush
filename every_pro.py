@@ -48,7 +48,7 @@ def user_info(i,ck):
     headers['uid'] = ck['uid']
     headers['token'] = ck['ck']
     result = ss.post(domain+"/user/sign", headers=headers, json={"pageSize": 10}).json()['code']
-    if result != 50:
+    if result != 50 or result != 4:
         # print(f"账号【{i+1}】签到成功,获得{result['point']}帮豆!")
         result = ss.post(domain+'/user/receiveOneDivideReward', headers=headers, json={"pageSize": 10}).json()
         # print(f"账号【{i+1} 领取一级帮豆:{result['msg']}")
