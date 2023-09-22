@@ -54,7 +54,31 @@ def do_read(i,ck):
 
 
 def get_money(i,ck):
-    pass
+    headers['Cookie'] = f'app-token="{ck["ck"]}"'
+    result = ss.get(domain+'/user/info',headers=headers).json()
+    if result['data'] != None:
+        rmb = float(result['data']['balance'])
+        result = ss.get(domain+"/account/withdraw/info", headers=headers).json()
+        if result['code'] == 1:
+            print(f"账号【{i+1}】余额:{rmb}豆 可提:{result['data']['canWithdrawDou']}豆  冻结:{result['data']['rateDou']}豆")
+            if rmb >= (Limit*100):
+                url = "https://x.moonbox.site/api/account/cash/withdraw"
+                data = {"dou": result['data']['canWithdrawDou']}
+                response = requests.post(url, headers=headers, json=data).json()
+                if response['code'] == 1:
+                    print(f"账号【{i+1}】提现成功-[{result['data']['canWithdrawDou']}]豆")
+                else:
+                    print(f"账号【{i+1}】提现失败-[{response}]")
+            else:
+                print(f"账号【{i+1}】未达到提现标准2元不执行提现")
+        elif result['code'] == 405:
+            print(f"{result['msg']}")
+        else:
+            print(f"错误未知{result}")
+    else:
+        print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
+        return False
+
 
 
 
