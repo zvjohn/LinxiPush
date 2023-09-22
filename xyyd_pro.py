@@ -50,6 +50,7 @@ def user_info(i,ck):
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
         'Cookie':f"ysm_uid={ysm_uid}",
+        'x-requested-with': 'com.tencent.mm',
     }
     result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
@@ -85,7 +86,8 @@ def do_read(i,ck):
     data = {'unionid':ck['ck']}
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
-        'Cookie':f"ysm_uid={ck['ck']}"
+        'Cookie':f"ysm_uid={ck['ck']}",
+        'x-requested-with': 'com.tencent.mm',
     }
     result = ss.post(f'{domain}/yunonline/v1/wtmpdomain',json=data).json()
     uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
@@ -94,6 +96,7 @@ def do_read(i,ck):
             temp_headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309062f) XWEB/8391 Flue',
                 'Origin': 'https://c1695090073-1256911967.cos.ap-beijing.myqcloud.com',
+                'x-requested-with': 'com.tencent.mm',
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
             if result.text == "":
@@ -155,7 +158,8 @@ def get_money(i,ck):
     ysm_uid = ck['ck']
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
-        'Cookie':f"ysm_uid={ysm_uid}"
+        'Cookie':f"ysm_uid={ysm_uid}",
+        'x-requested-with': 'com.tencent.mm',
     }
     result = ss.get(domain,headers=headers).text
     signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
