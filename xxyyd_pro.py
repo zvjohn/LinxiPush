@@ -16,7 +16,7 @@ from multiprocessing import Pool
 # 变量类型(本地/青龙)
 Btype = "青龙"
 # 提现限制(元)
-# Limit = 0
+Limit = 2
 # 新小阅阅读域名(无法使用时请更换)
 domain = 'https://x.moonbox.site/api'
 # 保持连接,重复利用
