@@ -25,7 +25,8 @@ from multiprocessing import Pool
 from urllib.parse import quote
 
 # 变量类型(本地/青龙)
-Btype = "青龙"
+# Btype = "青龙"
+Btype = "本地"
 # 提现限制(元)
 Limit = 2
 # 授权设备ID(软件版本>=1.3.3)
@@ -48,7 +49,7 @@ def ts ():
 def user_info(i,ck):
     ysm_uid = ck['ck']
     headers = {
-        'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
+        'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysm_uid={ysm_uid}",
         'x-requested-with': 'com.tencent.mm',
     }
@@ -85,7 +86,7 @@ def do_read(i,ck):
         print(f"账号【{i+1}】模拟上传设备指纹: {ck['did']}")
     data = {'unionid':ck['ck']}
     headers = {
-        'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
+        'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysm_uid={ck['ck']}",
         'x-requested-with': 'com.tencent.mm',
     }
@@ -94,8 +95,8 @@ def do_read(i,ck):
     print(f"账号【{i+1}】获取到KEY: {uk}")
     while True:
             temp_headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309062f) XWEB/8391 Flue',
-                'Origin': 'https://c1695090073-1256911967.cos.ap-beijing.myqcloud.com',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
+                'Origin': 'https://b1695353103-1304258503.cos.ap-beijing.myqcloud.com',
                 'x-requested-with': 'com.tencent.mm',
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
@@ -157,7 +158,7 @@ def do_read(i,ck):
 def get_money(i,ck):
     ysm_uid = ck['ck']
     headers = {
-        'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; GT-I9300 Build/JZO54K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30 MicroMessenger/5.2.380',
+        'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysm_uid={ysm_uid}",
         'x-requested-with': 'com.tencent.mm',
     }
@@ -239,7 +240,7 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxx","ts":"xxxx"}
+            {"ck":"xxxx","ts":"UID_xxx"}
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
