@@ -25,8 +25,7 @@ from multiprocessing import Pool
 from urllib.parse import quote
 
 # 变量类型(本地/青龙)
-# Btype = "青龙"
-Btype = "本地"
+Btype = "青龙"
 # 提现限制(元)
 Limit = 2
 # 授权设备ID(软件版本>=1.3.3)
