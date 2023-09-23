@@ -28,7 +28,7 @@ from urllib.parse import quote
 # 变量类型(本地/青龙)
 Btype = "青龙"
 # 提现限制(元)
-# Limit = 0
+Limit = 1
 # 授权设备ID(软件版本>=1.3.3)
 imei = os.getenv('LID')
 # 人人帮阅读域名(无法使用时请更换)
@@ -161,14 +161,14 @@ def get_money(i,ck):
     if result != None:
         options = [5000, 10000, 50000, 100000]  # 可选的金币列表
         max_money = max(filter(lambda x: x < (int(result['integralCurrent'])), options), default=0)
-        if max_money > 0 :
+        if max_money > Limit*10000 :
             result = ss.post("http://ebb.vinse.cn/apiuser/aliWd", headers=headers, json={"val": max_money, "pageSize": 10}).json()
             if result['code'] == 0 :    
-                print(f"账号【{i+1}】提现成功 {result}")
+                print(f"账号【{i+1}】提现({max_money/10000})成功 {result}")
             else:
-                print(f"账号【{i+1}】提现失败 {result}")
+                print(f"账号【{i+1}】提现({max_money/10000})失败 {result}")
         else:
-            print(f"账号【{i+1}】不满足最低提现标准 剩余金币[{result['integralCurrent']}]")
+            print(f"账号【{i+1}】当前金币[{result['integralCurrent']}] 未到达{Limit}元提现限制!")
     else:
         print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
 
