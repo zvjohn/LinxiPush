@@ -70,7 +70,7 @@ def get_money(i,ck):
                 else:
                     print(f"账号【{i+1}】提现失败-[{response}]")
             else:
-                print(f"账号【{i+1}】未达到提现标准2元不执行提现")
+                print(f"账号【{i+1}】未达到{Limit}元提现标准!")
         elif result['code'] == 405:
             print(f"{result['msg']}")
         else:
