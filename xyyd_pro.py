@@ -91,11 +91,12 @@ def do_read(i,ck):
     }
     result = ss.post(f'{domain}/yunonline/v1/wtmpdomain',json=data).json()
     uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
+    host = re.findall(r'(http.*?)/y', result['data']['domain'])[0]
     print(f"账号【{i+1}】获取到KEY: {uk}")
     while True:
             temp_headers = {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-                'Origin': 'https://b1695353103-1304258503.cos.ap-beijing.myqcloud.com',
+                'Origin': host,
                 'x-requested-with': 'com.tencent.mm',
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
