@@ -164,7 +164,7 @@ def get_money(i,ck):
         else:
             print(f'账号【{i+1}】未知错误:{response}')
     else:
-        print(f'账号【{i+1}】当前余额为{remain} 未到达2元提现限制!')
+        print(f'账号【{i+1}】当前余额为{remain} 未到达{Limit}元提现限制!')
 
 # 微信推送模块
 def check_status(key,link,index):
