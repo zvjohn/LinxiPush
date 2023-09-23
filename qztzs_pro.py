@@ -46,12 +46,12 @@ def get_money(i,ck):
     rmb = ss.post(domain + "/index/user_info",headers=headers,json=data).json()['data']
     if rmb != "":
         if rmb['user']['balance'] >= Limit:
-            data['money'] = "1"
+            data['money'] = str(Limit)
             data['name'] = ck['name']
             result = ss.post(domain+"/user/cashPost",headers=headers,json=data).json()
             print(f"账号【{i+1}】 {result['msg']}")
         else:
-            print(f"账号【{i+1}】 账号余额未达到1元提现标准!")
+            print(f"账号【{i+1}】 账号余额未达到{Limit}元提现标准!")
     else:
         print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
 
