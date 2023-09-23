@@ -61,7 +61,7 @@ def get_money(i,ck):
         result = ss.get(domain+"/account/withdraw/info", headers=headers).json()
         if result['code'] == 1:
             print(f"账号【{i+1}】余额:{rmb}豆 可提:{result['data']['canWithdrawDou']}豆  冻结:{result['data']['rateDou']}豆")
-            if rmb >= (Limit*100):
+            if result['data']['canWithdrawDou'] >= (Limit*100):
                 url = "https://x.moonbox.site/api/account/cash/withdraw"
                 data = {"dou": result['data']['canWithdrawDou']}
                 response = requests.post(url, headers=headers, json=data).json()
