@@ -46,31 +46,30 @@ def ts ():
 
 # 获取个人信息模块
 def user_info(i,ck):
-    ysm_uid = ck['ck']
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-        'Cookie':f"ysm_uid={ysm_uid}",
-        'x-requested-with': 'com.tencent.mm',
+        'Cookie':f"ysmuid={ck['ck']}",
     }
     result = ss.get(domain,headers=headers).text
-    signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
-    if signid == []:
+    request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
+    if request_id == []:
         print (f'账号【{i+1}】初始化失败,请检测CK({ck["ck"]})是否正确!')
         return False
     else:
-        result = ss.get(f'{domain}/yunonline/v1/sign_info?time={ts()}000&unionid={ysm_uid}').json()
+        unionid = re.findall(r'unionid="(.*?)";',result)[0]
+        result = ss.get(f'{domain}/yunonline/v1/sign_info?time={ts()}000&unionid={unionid}').json()
         if result['errcode'] == 0:
             pass
         else:
             print (f'账号【{i+1}】获取用户信息失败，账号异常:{result}')
             return False
-        result = ss.get(f'{domain}/yunonline/v1/hasWechat?unionid={ysm_uid}').json()
+        result = ss.get(f'{domain}/yunonline/v1/hasWechat?unionid={unionid}').json()
         if result['errcode'] == 0:
             pass
         else:
             print (f'账号【{i+1}】获取用户信息失败，账号异常:{result}')
             return False
-        result = ss.get(f'{domain}/yunonline/v1/gold?unionid={ysm_uid}&time={ts()}000').json()
+        result = ss.get(f'{domain}/yunonline/v1/gold?unionid={unionid}&time={ts()}000').json()
         if result['errcode'] == 0:
             print(f"账号【{i+1}】今日积分: {result['data']['day_gold']} 已阅读: {result['data']['day_read']}篇 剩余: {result['data']['remain_read']}篇")
         else:
@@ -79,15 +78,28 @@ def user_info(i,ck):
 
 # 阅读文章模块
 def do_read(i,ck):
-    if 'did' in ck:
-        Did_data=f"unionid={ck['ck']}&devid={ck['did']}"
-        Did_R = ss.post( domain+'/yunonline/v1/devtouid',data=Did_data)
-        print(f"账号【{i+1}】模拟上传设备指纹: {ck['did']}")
-    data = {'unionid':ck['ck']}
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-        'Cookie':f"ysm_uid={ck['ck']}",
-        'x-requested-with': 'com.tencent.mm',
+        'Cookie':f"ysmuid={ck['ck']}",
+    }
+    result = ss.get(domain,headers=headers).text
+    request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
+    if request_id == []:
+        print (f'账号【{i+1}】初始化失败,请检测CK({ck["ck"]})是否正确!')
+        return False
+    else:
+        unionid = re.findall(r'unionid="(.*?)";',result)[0]
+    if 'did' in ck:
+        Did_data=f"unionid={unionid}&devid={ck['did']}"
+        Did_R = ss.post( domain+'/yunonline/v1/devtouid',data=Did_data)
+        print(f"账号【{i+1}】模拟上传设备指纹: {ck['did']}")
+    
+    result = ss.get(domain,headers=headers).text
+    data = {'unionid':unionid}
+    headers = {
+        'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
+        'Cookie':f"ysmuid={ck['ck']}",
+
     }
     result = ss.post(f'{domain}/yunonline/v1/wtmpdomain',json=data).json()
     uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
@@ -96,8 +108,8 @@ def do_read(i,ck):
     while True:
             temp_headers = {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-                'Origin': host,
                 'x-requested-with': 'com.tencent.mm',
+                'Origin': host,
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
             if result.text == "":
@@ -156,19 +168,18 @@ def do_read(i,ck):
 
 # 提现模块
 def get_money(i,ck):
-    ysm_uid = ck['ck']
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-        'Cookie':f"ysm_uid={ysm_uid}",
-        'x-requested-with': 'com.tencent.mm',
+        'Cookie':f"ysmuid={ck['ck']}",
     }
     result = ss.get(domain,headers=headers).text
-    signid = re.findall(r'id\'\) \|\| "(.*?)";',result)
-    if signid == []:
+    request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
+    if request_id == []:
         print (f'账号【{i+1}】初始化失败,请检测CK({ck["ck"]})是否正确!')
         return False
     else:
-        result = ss.get(f'{domain}/yunonline/v1/exchange?unionid={ysm_uid}&request_id={signid}&qrcode_number=&addtime=').text
+        turl = re.findall(r'href="(.*?)">提现',result)[0]
+        result = ss.get(turl,headers=headers).text
         money = re.findall(r'id="exchange_gold">(.*?)</p>',result)
         if money == []:
             print (f'账号【{i+1}】金币获取失败,账号异常')
@@ -178,15 +189,15 @@ def get_money(i,ck):
             if int(money) >= 3000:
                 tmoney = (int(money) // 3000) * 3000
                 # print(f"账号【{i+1}】提交体现金币: {tmoney}")
-                t_data = {'unionid':ysm_uid,'request_id':signid,'gold':tmoney}
+                t_data = {'unionid':ck["ck"],'request_id':request_id,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
                 money = int(money) - 3000
             if float(rmb) >= float(Limit):
-                j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
+                j_data = {'unionid':ck["ck"],'signid':request_id,'ua':0,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
-                print(f"账号【{i+1}】余额满足{Limit}元体现结果: {j_result['msg']}")
+                print(f"账号【{i+1}】余额满足2元体现结果: {j_result['msg']}")
             else:
-                print(f"账号【{i+1}】余额小于{Limit}元暂不提现! 当前金币: {money} 当前余额:{rmb}")
+                print(f"账号【{i+1}】余额小于2元暂不提现! 当前金币: {money} 当前余额:{rmb}")
            
 
 # 微信推送模块
@@ -240,7 +251,7 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxx","ts":"UID_xxx"}
+            {"ck":"xxxx","ts":"xxxx"},
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
