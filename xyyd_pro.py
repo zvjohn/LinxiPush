@@ -183,9 +183,9 @@ def get_money(i,ck):
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':ysm_uid,'signid':signid,'ua':0,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
-                print(f"账号【{i+1}】余额满足2元体现结果: {j_result['msg']}")
+                print(f"账号【{i+1}】余额满足{Limit}元体现结果: {j_result['msg']}")
             else:
-                print(f"账号【{i+1}】余额小于2元暂不提现! 当前金币: {money} 当前余额:{rmb}")
+                print(f"账号【{i+1}】余额小于{Limit}元暂不提现! 当前金币: {money} 当前余额:{rmb}")
            
 
 # 微信推送模块
