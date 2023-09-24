@@ -15,7 +15,7 @@
 #   2.青龙变量设置LID变量名,值为授权软件的LID
 # 软件版本
 version = "0.0.2"
-
+name = "人人帮阅读"
 import requests
 import json
 import os
@@ -39,7 +39,7 @@ ss = requests.session()
 check_list=['Mzg2Mzk3Mjk5NQ==']
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
     'platform': '0',
 }
 
@@ -47,8 +47,8 @@ def user_info(i,ck):
     headers['un'] = ck['un']
     headers['uid'] = ck['uid']
     headers['token'] = ck['ck']
-    result = ss.post(domain+"/user/sign", headers=headers, json={"pageSize": 10}).json()['code']
-    if result != 50 or result != 4:
+    result = ss.post(domain+"/user/sign", headers=headers, json={"pageSize": 10}).json()
+    if result['code'] != 50 or result['code'] != 4:
         # print(f"账号【{i+1}】签到成功,获得{result['point']}帮豆!")
         result = ss.post(domain+'/user/receiveOneDivideReward', headers=headers, json={"pageSize": 10}).json()
         # print(f"账号【{i+1} 领取一级帮豆:{result['msg']}")
@@ -195,6 +195,7 @@ def check_status(key,link,index):
             time.sleep(4)
         result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
         print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
+        return False
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
         time.sleep(index*2)
@@ -212,7 +213,7 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██╔══██╗██╔══██╗██╔══██╗
 ███████╗██║██║ ╚████║██╔╝ ██╗██║      ██║  ██║██║  ██║██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝      ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
-    项目:人人帮阅读       BY-林夕       Verion: {version}(并发)
+    项目:{name}       BY-林夕       Verion: {version}(并发)
     Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
@@ -224,7 +225,7 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"un":"xxx","uid":"123456","ck":"token","ts":"Wxpusher的UID"}
+            {"un":"xxx","uid":"xxx","ck":"xxx","ts":"xxxx"},
         ]
         if ck_token == []:
             print('账号异常: 请添加本地ck_token示例:{"un":"xxx"x,"uid":"123456","ck":"xxxx","ts":"UID_sddsddsd"}')
@@ -256,4 +257,4 @@ if __name__ == "__main__":
         # 关闭连接
         ss.close
         # 输出结果
-        print(f"================[人人帮V{version}]===============")
+        print(f"================[{name}V{version}]===============")
