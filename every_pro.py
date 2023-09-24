@@ -161,7 +161,7 @@ def get_money(i,ck):
     if result != None:
         options = [5000, 10000, 50000, 100000]  # 可选的金币列表
         max_money = max(filter(lambda x: x < (int(result['integralCurrent'])), options), default=0)
-        if max_money > Limit*10000 :
+        if max_money >= Limit*10000 :
             result = ss.post("http://ebb.vinse.cn/apiuser/aliWd", headers=headers, json={"val": max_money, "pageSize": 10}).json()
             if result['code'] == 0 :    
                 print(f"账号【{i+1}】提现({max_money/10000})成功 {result}")
