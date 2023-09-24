@@ -171,6 +171,7 @@ def get_money(i,ck):
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysmuid={ck['ck']}",
+        'Origin': 'http://1695525674.snak.top'
     }
     result = ss.get(domain,headers=headers).text
     request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
@@ -234,6 +235,7 @@ def check_status(key,link,index):
         #print(f"手动微信阅读链接: {link}")
         time.sleep(30)
         return True
+
 
 if __name__ == "__main__":
     print(f"""██╗     ██╗███╗   ██╗██╗  ██╗██╗     ██╗  ██╗██╗   ██╗██╗   ██╗██████╗ 
