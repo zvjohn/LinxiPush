@@ -181,6 +181,8 @@ def get_money(i,ck):
         turl = re.findall(r'href="(.*?)">提现',result)[0]
         result = ss.get(turl,headers=headers).text
         money = re.findall(r'id="exchange_gold">(.*?)</p>',result)
+        request_id = re.findall(r'request_id = "(.*?)";',result)
+        unionid = re.findall(r"unionid = '(.*?)';",result)
         if money == []:
             print (f'账号【{i+1}】金币获取失败,账号异常')
         else:
@@ -189,11 +191,11 @@ def get_money(i,ck):
             if int(money) >= 3000:
                 tmoney = (int(money) // 3000) * 3000
                 # print(f"账号【{i+1}】提交体现金币: {tmoney}")
-                t_data = {'unionid':ck["ck"],'request_id':request_id,'gold':tmoney}
+                t_data = {'unionid':unionid,'request_id':request_id,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
                 money = int(money) - 3000
             if float(rmb) >= float(Limit):
-                j_data = {'unionid':ck["ck"],'signid':request_id,'ua':0,'ptype':0,'paccount':'','pname':''}
+                j_data = {'unionid':unionid,'signid':request_id,'ua':1,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
                 print(f"账号【{i+1}】余额满足2元体现结果: {j_result['msg']}")
             else:
