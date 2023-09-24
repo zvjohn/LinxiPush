@@ -171,7 +171,7 @@ def get_money(i,ck):
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysmuid={ck['ck']}",
-        'Origin': 'http://1695525674.snak.top'
+        'Origin': 'http://1695525674.snak.top',
     }
     result = ss.get(domain,headers=headers).text
     request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
@@ -193,7 +193,8 @@ def get_money(i,ck):
                 tmoney = (int(money) // 3000) * 3000
                 # print(f"账号【{i+1}】提交体现金币: {tmoney}")
                 t_data = {'unionid':unionid,'request_id':request_id,'gold':tmoney}
-                t_result = ss.post(f'{domain}/yunonline/v1/user_gold',json=t_data).json()
+                t_result = ss.post(f'{domain}/yunonline/v1/user_gold',data=t_data).json()
+                print(f'账号【{i+1}】金币转换金额{t_result}')
                 money = int(money) - 3000
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':unionid,'signid':request_id,'ua':1,'ptype':0,'paccount':'','pname':''}
