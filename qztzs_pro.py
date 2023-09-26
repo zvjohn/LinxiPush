@@ -1,13 +1,15 @@
 # Author: lindaye
-# Update:2023-09-20
+# Update:2023-09-26
 # 泉站桶装水
 # 活动入口：泉站桶装水小程序
 # 添加账号说明(青龙/本地)二选一
 #   青龙: 青龙变量qztoken 值{"name":"真实姓名","token":"BVUVVUY"} 一行一个(回车分割)
 #   本地: 脚本内置ck方法ck_token = [{"name":"真实姓名","token":"BVUVVUY"},{"name":"真实姓名","token":"BVUVVUY"}]
 # 软件版本
-version = "0.0.2"
-
+version = "0.0.3"
+name = "泉站桶装水"
+linxi_token = "qztoken"
+linxi_tips = '{"name":"真实姓名","token":"BVUVVUY"}'
 import requests
 import json
 import os
@@ -23,7 +25,7 @@ domain = 'https://admin.dtds888.com/api/index'
 # 保持连接,重复利用
 ss = requests.session()
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF XWEB/8379',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
     'Content-Type': 'application/json',
 }
 
@@ -64,22 +66,22 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██║▄▄ ██║ ███╔╝     ██║    ███╔╝  ╚════██║
 ███████╗██║██║ ╚████║██╔╝ ██╗██║      ╚██████╔╝███████╗   ██║   ███████╗███████║
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝       ╚══▀▀═╝ ╚══════╝   ╚═╝   ╚══════╝╚══════╝
-    项目:泉站桶装水(每日0.2)       BY-林夕       Verion: {version}(并发)
+    项目:{name}           BY-林夕          Verion: {version}(并发)
     Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
-        if os.getenv('qztoken') == None:
-            print('账号Cookie异常: 请添加qztoken变量示例:{"name":"张三","token":"BVUVVUY"}')
+        if os.getenv(linxi_token) == None:
+            print(f'青龙变量异常: 请添加{linxi_token}变量示例:{linxi_tips} 确保一行一个')
             exit()
         # 变量CK列表
-        ck_token = [json.loads(line) for line in os.getenv('qztoken').splitlines()]
+        ck_token = [json.loads(line) for line in os.getenv(linxi_token).splitlines()]
     else:
         # 本地CK列表
         ck_token = [
-            {"name":"真实姓名","token":"BVUVVUY"}
+            # 这里填写本地变量
         ]
         if ck_token == []:
-            print('账号异常: 请添加本地ck_token示例:{"name":"张三","token":"BVUVVUY"}')
+            print(f'本地变量异常: 请添加本地ck_token示例:{linxi_tips}')
 
     # 创建进程池
     with Pool() as pool:
@@ -100,4 +102,4 @@ if __name__ == "__main__":
         # 关闭连接
         ss.close
         # 输出结果
-        print(f"================[泉站桶装水V{version}]===============")
+        print(f"================[{name}V{version}]===============")
