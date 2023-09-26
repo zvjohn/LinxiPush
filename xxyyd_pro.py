@@ -69,13 +69,13 @@ def get_money(i,ck):
                 if response['code'] == 1:
                     print(f"账号【{i+1}】提现成功-[{result['data']['canWithdrawDou']}]豆")
                 else:
-                    print(f"账号【{i+1}】提现失败-[{response}]")
+                    print(f"账号【{i+1}】提现失败-[{response['msg']}]")
             else:
                 print(f"账号【{i+1}】未达到{Limit}元提现标准!")
         elif result['code'] == 405:
-            print(f"{result['msg']}")
+            print(f"账号【{i+1}】{result['msg']}")
         else:
-            print(f"错误未知{result}")
+            print(f"账号【{i+1}】错误未知{result}")
     else:
         print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
         return False
