@@ -1,5 +1,5 @@
 # Author: lindaye
-# Update:2023-09-20
+# Update:2023-09-26
 # 人人帮阅读
 # 活动入口：http://ebb.useradmin.cloud/user/index.html?mid=1703917033462300672
 # 添加账号说明(青龙/本地)二选一
@@ -14,7 +14,7 @@
 #   1.仅针对授权用户开放,需配合授权软件使用
 #   2.青龙变量设置LID变量名,值为授权软件的LID
 # 软件版本
-version = "0.0.2"
+version = "0.0.3"
 name = "人人帮阅读"
 import requests
 import json
@@ -24,12 +24,13 @@ import time
 import random
 from multiprocessing import Pool
 from urllib.parse import quote
-
+# 阅读等待时间
+tsleep = 40
 # 变量类型(本地/青龙)
 Btype = "青龙"
 # 提现限制(元)
 Limit = 1
-# 授权设备ID(软件版本>=1.3.3)
+# 授权设备ID(软件版本>=1.3.3)[非授权用户不填即可]
 imei = os.getenv('LID')
 # 人人帮阅读域名(无法使用时请更换)
 domain = 'http://ebb.vinse.cn/api'
@@ -183,7 +184,7 @@ def check_status(key,link,index):
         uuid = result['uuid']
         print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-人人帮阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
@@ -199,7 +200,7 @@ def check_status(key,link,index):
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-人人帮阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
         time.sleep(30)
@@ -225,7 +226,7 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"un":"xxx","uid":"xxx","ck":"xxxxx","ts":"xxxxx"},
+            {"un":"xxx","uid":"xxx","ck":"xxxx","ts":"xxxx"},
         ]
         if ck_token == []:
             print('账号异常: 请添加本地ck_token示例:{"un":"xxx"x,"uid":"123456","ck":"xxxx","ts":"UID_sddsddsd"}')
