@@ -1,5 +1,5 @@
 # Author: lindaye
-# Update:2023-09-20
+# Update:2023-09-26
 # 小阅阅阅读
 # 活动入口：https://sd8690.viptaoyou.top:10261/yunonline/v1/auth/1c3da9bd1689d78a51463138d634512f?codeurl=sd8690.viptaoyou.top:10261&codeuserid=2&time=1694212129
 # 添加账号说明(青龙/本地)二选一
@@ -14,7 +14,10 @@
 #   1.仅针对授权用户开放,需配合授权软件使用
 #   2.青龙变量设置LID变量名,值为授权软件的LID
 # 软件版本
-version = "1.1.9"
+version = "1.2.0"
+name = "小阅阅读"
+linxi_token = "xyytoken"
+linxi_tips = '{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}'
 import requests
 import json
 import time
@@ -23,15 +26,16 @@ import re
 import os
 from multiprocessing import Pool
 from urllib.parse import quote
-
+# 阅读等待时间
+tsleep = 40
 # 变量类型(本地/青龙)
 Btype = "青龙"
 # 提现限制(元)
 Limit = 2
-# 授权设备ID(软件版本>=1.3.3)
+# 授权设备ID(软件版本>=1.3.3)[非授权用户不填即可]
 imei = os.getenv('LID')
 # 小阅阅读域名(无法使用时请更换)
-domain = 'http://1692416143.3z2rpa.top'
+domain = 'http://1695643778.tyjnwf.top'
 # 保持连接,重复利用
 ss = requests.session()
 # 检测文章列表(如有未收录可自行添加)
@@ -49,6 +53,7 @@ def user_info(i,ck):
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysmuid={ck['ck']}",
+        'Referer': f'{domain}/'
     }
     result = ss.get(domain,headers=headers).text
     request_id = re.findall(r'id\'\) \|\| "(.*?)";',result)
@@ -194,14 +199,14 @@ def get_money(i,ck):
                 # print(f"账号【{i+1}】提交体现金币: {tmoney}")
                 t_data = {'unionid':unionid,'request_id':request_id,'gold':tmoney}
                 t_result = ss.post(f'{domain}/yunonline/v1/user_gold',data=t_data).json()
-                print(f'账号【{i+1}】金币转换金额{t_result}')
+                # print(f'账号【{i+1}】金币转换金额{t_result}')
                 money = int(money) - 3000
             if float(rmb) >= float(Limit):
                 j_data = {'unionid':unionid,'signid':request_id,'ua':1,'ptype':0,'paccount':'','pname':''}
                 j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
-                print(f"账号【{i+1}】余额满足2元体现结果: {j_result['msg']}")
+                print(f"账号【{i+1}】余额满足{Limit}元体现结果: {j_result['msg']}")
             else:
-                print(f"账号【{i+1}】余额小于2元暂不提现! 当前金币: {money} 当前余额:{rmb}")
+                print(f"账号【{i+1}】余额小于{Limit}元暂不提现! 当前金币: {money} 当前余额:{rmb}")
            
 
 # 微信推送模块
@@ -215,7 +220,7 @@ def check_status(key,link,index):
         uuid = result['uuid']
         print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
@@ -231,12 +236,11 @@ def check_status(key,link,index):
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-小阅阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
         time.sleep(30)
         return True
-
 
 if __name__ == "__main__":
     print(f"""██╗     ██╗███╗   ██╗██╗  ██╗██╗     ██╗  ██╗██╗   ██╗██╗   ██╗██████╗ 
@@ -245,21 +249,22 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██╔██╗   ╚██╔╝    ╚██╔╝  ██║  ██║
 ███████╗██║██║ ╚████║██╔╝ ██╗██║     ██╔╝ ██╗   ██║      ██║   ██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═════╝ 
-    项目:小阅阅读                BY-林夕               Verion: {version}(并发)
+    项目:{name}           BY-林夕          Verion: {version}(并发)
+    Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
-        if os.getenv('xyytoken') == None:
-            print('青龙变量异常: 请添加xyytoken变量示例:{"ck":"xxxx","ts":"UID_xxx"} 确保一行一个')
+        if os.getenv(linxi_token) == None:
+            print(f'青龙变量异常: 请添加{linxi_token}变量示例:{linxi_tips} 确保一行一个')
             exit()
         # 变量CK列表
-        ck_token = [json.loads(line) for line in os.getenv('xyytoken').splitlines()]
+        ck_token = [json.loads(line) for line in os.getenv(linxi_token).splitlines()]
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxx","ts":"xxxx"},
+            # 这里填写本地变量
         ]
         if ck_token == []:
-            print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
+            print(f'本地变量异常: 请添加本地ck_token示例:{linxi_tips}')
     print("==================回调服务器状态=================")
     if imei:
         print(f"[回调服务器]:已启用-[授权ID:{imei}]")
@@ -284,4 +289,4 @@ if __name__ == "__main__":
         # 关闭连接
         ss.close
         # 输出结果
-        print(f"================[小阅阅读V{version}]===============")
+        print(f"================[{name}V{version}]===============")
