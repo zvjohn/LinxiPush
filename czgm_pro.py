@@ -1,5 +1,5 @@
 # Author: lindaye
-# Update:2023-09-20
+# Update:2023-09-26
 # 钢镚(充值购买)阅读
 # 活动入口：http://2496831.sl4mwis5.gbl.avc14qvjzax7.cloud/?p=2496831
 # 添加账号说明(青龙/本地)二选一
@@ -14,7 +14,8 @@
 #   1.仅针对授权用户开放,需配合授权软件使用
 #   2.青龙变量设置LID变量名,值为授权软件的LID
 # 软件版本
-version = "1.1.9"
+version = "1.2.0"
+name = "充值购买(钢镚)"
 import requests
 from multiprocessing import Pool
 import re
@@ -24,12 +25,13 @@ import random
 import os
 import json
 from urllib.parse import quote
-
+# 阅读等待时间
+tsleep = 40
 # 变量类型(本地/青龙)
 Btype = "青龙"
 # 提现限制(元)
 Limit = 2
-# 授权设备ID(软件版本>=1.3.3)
+# 授权设备ID(软件版本>=1.3.3)[非授权用户不填即可]
 imei = os.getenv('LID')
 # 充值购买(钢镚)域名(无法使用时请更换)
 domain = 'http://2496831.marskkqh7ij0j.jpsl.u1jcnc75wwbyk.cloud'
@@ -56,7 +58,7 @@ def get_sign():
 def user_info(i,ck):
     # 请求头
     headers = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 9; V1923A Build/PQ3B.190801.06161913; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/5635 MicroMessenger/8.0.40.2420(0x28002837) WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64",
         "Cookie":f"gfsessionid={ck['ck']};"
     }
     try:
@@ -78,7 +80,7 @@ def user_info(i,ck):
 def do_read(i,ck):
     # 请求头
     headers = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 9; V1923A Build/PQ3B.190801.06161913; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/5635 MicroMessenger/8.0.40.2420(0x28002837) WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64",
         "Cookie":f"gfsessionid={ck['ck']};"
     }
     while True:
@@ -142,7 +144,7 @@ def do_read(i,ck):
 def get_money(i,ck):
     # 请求头
     headers = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 9; V1923A Build/PQ3B.190801.06161913; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/5635 MicroMessenger/8.0.40.2420(0x28002837) WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64",
         "Cookie":f"gfsessionid={ck['ck']};"
     }
     response = ss.get(domain+"/read/info", headers=headers, data=get_sign())
@@ -177,7 +179,7 @@ def check_status(key,link,index):
         uuid = result['uuid']
         print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
@@ -193,7 +195,7 @@ def check_status(key,link,index):
     else:
         print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
         time.sleep(index*2)
-        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-钢镚阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
+        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
         time.sleep(30)
@@ -207,7 +209,7 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██║   ██║██╔══██╗  ╚██╔╝  ██║  ██║
 ███████╗██║██║ ╚████║██╔╝ ██╗██║      ╚██████╔╝██████╔╝   ██║   ██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝       ╚═════╝ ╚═════╝    ╚═╝   ╚═════╝ 
-    项目:钢镚阅读                BY-林夕               Verion: {version}(并发)
+    项目:{name}           BY-林夕          Verion: {version}(并发)
 """)
     if Btype == "青龙":
         if os.getenv('gbtoken') == None:
@@ -218,7 +220,7 @@ if __name__ == "__main__":
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxx","ts":"xxxx"}
+            {"ck":"xxxx","ts":"xxxx"},
         ]
         if ck_token == []:
             print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
@@ -246,4 +248,4 @@ if __name__ == "__main__":
         # 关闭连接
         ss.close
         # 输出结果
-        print(f"================[钢镚阅读V{version}]===============")
+        print(f"================[{name}V{version}]===============")
