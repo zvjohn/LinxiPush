@@ -1,5 +1,5 @@
 # Author: lindaye
-# Update:2023-09-20
+# Update:2023-09-26
 # 小啄阅读
 # 建议一天执行两次(或许有意外之喜)
 # 活动入口：TG内部群
@@ -8,7 +8,10 @@
 #   青龙: 青龙变量xztoken 值{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"} 一行一个(回车分割)
 #   本地: 脚本内置ck方法ck_token = [{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"},{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}]
 # 软件版本
-version = "0.0.2"
+version = "0.0.3"
+name = "小啄阅读"
+linxi_token = "xztoken"
+linxi_tips = '{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}'
 import requests
 import json
 import os
@@ -23,7 +26,7 @@ domain = 'http://redpage230617.read.biwuzhaojin.com'
 # 保持连接,重复利用
 ss = requests.session()
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309062f) XWEB/8379 Flue',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
     'Referer': 'http://sc0909123703.wkyvch9n2.cn/',
     'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
 }
@@ -69,22 +72,22 @@ if __name__ == "__main__":
 ██║     ██║██║╚██╗██║ ██╔██╗ ██║╚════╝██╔██╗  ███╔╝    ╚██╔╝  ██║  ██║
 ███████╗██║██║ ╚████║██╔╝ ██╗██║     ██╔╝ ██╗███████╗   ██║   ██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═════╝ 
-    项目:小啄阅读(几秒到低保0.3)       BY-林夕       Verion: {version}(并发)
+    项目:{name}           BY-林夕          Verion: {version}(并发)
     Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
-        if os.getenv('xztoken') == None:
-            print('账号Cookie异常: 请添加xztoken变量示例:{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}')
+        if os.getenv(linxi_token) == None:
+            print(f'青龙变量异常: 请添加{linxi_token}变量示例:{linxi_tips} 确保一行一个')
             exit()
         # 变量CK列表
-        ck_token = [json.loads(line) for line in os.getenv('xztoken').splitlines()]
+        ck_token = [json.loads(line) for line in os.getenv(linxi_token).splitlines()]
     else:
         # 本地CK列表
         ck_token = [
-            {"uid":"xxxx","sign":"xxxx"}
+            # 这里填写本地变量
         ]
         if ck_token == []:
-            print('账号异常: 请添加本地ck_token示例:{"uid":"123456","sign":"92avddsvs545sdvsd1v515s1dv"}')
+            print(f'本地变量异常: 请添加本地ck_token示例:{linxi_tips}')
 
     # 创建进程池
     with Pool() as pool:
@@ -105,4 +108,4 @@ if __name__ == "__main__":
         # 关闭连接
         ss.close
         # 输出结果
-        print(f"================[小啄阅读V{version}]===============")
+        print(f"================[{name}V{version}]===============")
