@@ -16,6 +16,8 @@
 # 软件版本
 version = "1.2.0"
 name = "充值购买(钢镚)"
+linxi_token = "gbtoken"
+linxi_tips = '{"ck":"gfsessionid的值","ts":"Wxpusher的UID"}'
 import requests
 from multiprocessing import Pool
 import re
@@ -210,20 +212,21 @@ if __name__ == "__main__":
 ███████╗██║██║ ╚████║██╔╝ ██╗██║      ╚██████╔╝██████╔╝   ██║   ██████╔╝
 ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝       ╚═════╝ ╚═════╝    ╚═╝   ╚═════╝ 
     项目:{name}           BY-林夕          Verion: {version}(并发)
+    Github仓库地址: https://github.com/linxi-520/LinxiPush
 """)
     if Btype == "青龙":
-        if os.getenv('gbtoken') == None:
-            print('青龙变量异常: 请添加gbtoken变量示例:{"ck":"xxxx","ts":"UID_xxx"} 确保一行一个')
+        if os.getenv(linxi_token) == None:
+            print(f'青龙变量异常: 请添加{linxi_token}变量示例:{linxi_tips} 确保一行一个')
             exit()
         # 变量CK列表
-        ck_token = [json.loads(line) for line in os.getenv('gbtoken').splitlines()]
+        ck_token = [json.loads(line) for line in os.getenv(linxi_token).splitlines()]
     else:
         # 本地CK列表
         ck_token = [
-            {"ck":"xxxx","ts":"xxxx"},
+            # 这里填写本地变量
         ]
         if ck_token == []:
-            print('本地变量异常: 请添加本地ck_token示例:{"ck":"xxxx","ts":"UID_xxx"}')
+            print(f'本地变量异常: 请添加本地ck_token示例:{linxi_tips}')
     print("==================回调服务器状态=================")
     if imei:
         print(f"[回调服务器]:已启用-[授权ID:{imei}]")
