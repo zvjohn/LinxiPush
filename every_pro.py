@@ -83,10 +83,9 @@ def do_read(i,ck):
         if link==None or link=='':
             print(f"账号【{i+1}】获取阅读链接失败:{result}")
             return False
-        group = re.findall('&group=(.*?)endok', link+'endok')[0]
         while True:
             time.sleep(3)
-            data = {"fr":"ebb0726","uid":ck['uid'],"group":group,"un":None,"token":None,"pageSize":20}
+            data = {"fr":"ebb0726","uid":ck['uid'],"un":None,"token":None,"pageSize":20}
             result = ss.post('http://u.cocozx.cn/ipa/read/read', headers=headers, json=data).json()
             if result['code'] == 0:
                 status = result['result']['status']
