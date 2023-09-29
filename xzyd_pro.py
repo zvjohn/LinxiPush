@@ -42,16 +42,17 @@ def user_info(i,ck):
 
 
 def do_read(i,ck):
-    print(f"账号【{i+1}】开始阅读")
     for i in range(30):
         rurl = f'http://red1.read.biwuzhaojin.com/web-read/get-url?readUserId={ck["uid"]}'
         result = ss.get(rurl).json()
         if result['code']==200:
-            pass
+            check = True
         else:
+            check = False
             print(f"账号【{i+1}】阅读失败:{result['msg']}")
             break
-    print(f"账号【{i+1}】阅读任务完成")
+    if check:
+        print(f"账号【{i+1}】阅读任务完成")
 
 
 def get_money(i,ck):
