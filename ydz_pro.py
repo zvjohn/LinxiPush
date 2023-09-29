@@ -60,7 +60,7 @@ check_list = [
 # 获取个人信息模块
 def user_info(i,ck):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/99.0.4844.88 Mobile Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
         'a_h_n': f'http%3A%2F%2F5851577307.gbvbmxo.cn%2F%3Fgoid%3Ditrb/{ck["ck"]}' 
     }
     result = requests.post(domain+"/user/getinfo?v=3",headers=headers).json()
@@ -73,7 +73,7 @@ def user_info(i,ck):
 # 阅读文章模块
 def do_read(i,ck):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/99.0.4844.88 Mobile Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
         'a_h_n': f'http%3A%2F%2F5851577307.gbvbmxo.cn%2F%3Fgoid%3Ditrb/{ck["ck"]}' 
     }
     result = requests.post(domain+"/user/getinfo?v=3",headers=headers).json()
@@ -152,7 +152,7 @@ def do_read(i,ck):
 # 提现模块
 def get_money(i,ck):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/99.0.4844.88 Mobile Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Referer': 'http://5851751251.fjxsjjw.cn/',
         'Origin': 'http://5851751251.fjxsjjw.cn',
