@@ -41,20 +41,7 @@ domain = "http://wxr.jjyii.com"
 ss = requests.session()
 # 检测文章列表(如有未收录可自行添加)
 check_list = [
-    "MzI0MjE5MTc0OA==","MzU0MDg4MDU2Nw==","Mzg2MjA2ODIxMQ==","MzAwNzA3MDAzMw==","Mzg5NjcyMzgyOA==","MzI3MzY1OTI4Ng==",
-    "MzUyMzk1MTAyNg==","MzI3MTA5MTkwNQ==","MzIxNjEzMDg2OQ==","MzI1MDAwNDY1NA==","MjM5NjY4Mzk5OQ==","Mzg4OTA1MzI0Ng==",
-    "MzkxMDI2NTgwMw==","MzI2NDk5NzA0Mw==","MzUxMDExNjU1MA==","MjM5MTA5ODYzNQ==","MzI1OTI5OTE3Mw==","MzIyNTY0NzA1MQ==",
-    "MzAxMTAxNDk0NQ==","MjM5NzM2MDQwOQ==","MzU3Mjc2ODczMA==","MzU2ODExMTkxOQ==","MjM5Mjc5ODU3OQ==","MzI5MDE0MTc0OQ==",
-    "Mzg2MTI0Mzc1Nw==","MzU3MTc2MzI3Nw==","MzU1OTgxMTE3Mg==","MzkxMDM0NTQxMg==","MzI5NDgwMDAxMQ==","MzIzMzI3NzQ2MQ==",
-    "MzI2Mzk0NDgyMA==","MzU1ODI4MjI4Nw==","MzI4ODA1OTE1MA==","MzUzNjE3NDczNw==","MzIxNDMwMDk4OA==","MzU1ODgwMzk3Mw==",
-    "MzkyNzI5MDQ0MA==","MzIzNjgyOTE1Ng==","MzkxMDMwMTU3MQ==","Mzg5ODA1NDY5MQ==","MzI4MzE2NjcyOQ==","MzUyMjAxMDQ3NA==",
-    "MzA5MDIzODA0NQ==","Mzg4Njk4MTkwMw==","MzA5NjU3MjUxMw==","MzU0MDg1NDczNw==","MzU3MzczNzU0MQ==","MzA3MTI5NDc5Mw==",
-    "MzIyNjA5ODQwMA==","MzI2MjA0MzEwNA==","MzA3NDM1OTExMQ==","MzkzMzMxNjk2OA==","MzU4MDMwMDMwMg==","MjM5MTk3NTQyOQ==",
-    "MzUyNjk2NzQ2OQ==","MzIxNzc5NjA4NQ==","MjM5MDYxMDA0MQ==","MzI2ODU3MzA4MQ==","Mzg5MDQ2NzYyOA==","Mzg3MjA3OTgwNQ==",
-    "MzIxMjA0MDQ5Mg==","MzA5NDcxMDczMw==","Mzg2NzU5ODcwNA==","MzI4NDY5MjkwNA==","MjM5MzkxODMzMw==","MzA5NTAwMzAwOA==",
-    "MzU0MTk2MDkzNg==","MzUxODQ2Mzg1OQ==","MzIzNzU4NzE5NQ==","MzU1ODA3MDY1MA==","MzU0OTk2NzM2OQ==","MzU5NTczMzA0MQ==",
-    "MzI0MjY0NTY3Ng==","MzIxNTcyODI5OA==","MzU4OTc0OTgwOQ==","MzIyMzgwNDc4Mg==","MzA4OTYzOTIzMA==","MjM5MTExMTMwOQ==",
-    "MzA5NzU4OTIzNA=="
+    # 自行添加,TG内部群公布汇总
 ]
 
 # 获取个人信息模块
@@ -124,7 +111,7 @@ def do_read(i,ck):
                 if biz in check_list:
                     print(f"账号【{i+1}】检测到已收录BIZ[{biz}]")
                 else:
-                    print(f"账号【{i+1}】检测到未收录BIZ[{biz}]请发送到内部群(黑号前两个,没黑前一个)")
+                    print(f"账号【{i+1}】检测到未收录BIZ[{biz}]请自动添加")
                 print(f"账号【{i+1}】阅读检测文章-已推送微信,请40s内完成验证!")
                 check = check_status(ck['ts'],result['data']['url'],i)
                 if check:
