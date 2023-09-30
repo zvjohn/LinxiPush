@@ -22,17 +22,18 @@ Btype = "青龙"
 # 提现限制(元)
 # Limit = 0
 # 小啄阅读域名(无法使用时请更换)
-domain = 'http://redpage230617.read.biwuzhaojin.com'
+domain = 'http://redpage230618.read.biwuzhaojin.com'
 # 保持连接,重复利用
 ss = requests.session()
 headers = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    'Referer': 'http://sc0909123703.wkyvch9n2.cn/',
+    'Referer': 'http://redpage230618.read.biwuzhaojin.com/',
+    'Origin': 'http://redpage230618.read.biwuzhaojin.com',
     'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
 }
 
 def user_info(i,ck):
-    data = f'code=null&channelId=230327002&readUserId={ck["uid"]}&sign={ck["sign"]}'
+    data = f'code=null&channelId=null&readUserId={ck["uid"]}&sign={ck["sign"]}'
     result = ss.post(domain+'/web-read/read-info',data=data,headers=headers).json()
     if result['code'] == 201:
         print(f"账号【{i+1}】账号异常请检查该账号ck是否正确!")
@@ -53,7 +54,6 @@ def do_read(i,ck):
             break
     if check:
         print(f"账号【{i+1}】阅读任务完成")
-
 
 def get_money(i,ck):
     tdata = f'readUserId={ck["uid"]}&sign={ck["sign"]}'
