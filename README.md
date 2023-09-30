@@ -51,7 +51,7 @@
 	check = check_status(UID,"http://baidu.com",1)
 	print(check)
 > #### `Wxpusher自动检测助手`使用示例:
-> 暂未发布
+> Wxpusher助手-使用说明.docx
 <img src="zsm.png" alt="打赏" width="300px" height="300px"/>
 > 打赏
 
