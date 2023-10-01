@@ -38,8 +38,7 @@ def user_info(i,ck):
         if result['errno'] == 999:
             print(f"账号【{i+1}】{result['message']}")
         elif result['errno'] == 0:
-            integral_str = result['data']['integral']
-            print(f"账号【{i+1}】账号:{ck['mobile']} 矿石余额:{integral_str}")
+            print(f"账号【{i+1}】账号:{result['data']['nickname']} 矿石余额:{result['data']['integral']}")
         else:
             print(f"账号【{i+1}】错误未知{result}")
     elif result['errno'] == 999:
