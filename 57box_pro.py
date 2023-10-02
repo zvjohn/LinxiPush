@@ -65,13 +65,13 @@ def do_read(i,ck):
                 for j in range(3):
                     result = ss.post(domain+ f"?i=2&t=0&v=1&from=wxapp&c=entry&a=wxapp&do=uptaskinfo&&token={token}", headers=headers, data=data).json()
                     if result['errno'] == 999:
-                        print(f"账号【{i+1}】任务失败:{task} {result['message']}")
+                        print(f"账号【{i+1}】任务失败:{task}第{j+1}次 {result['message']}")
                         break
                     elif result['errno'] == 0:
                         print(f"账号【{i+1}】任务成功:{task}第{j+1}次 {result['message']}")
                         time.sleep(5)
                     else:
-                        print(f"账号【{i+1}】错误未知:{task} {result}")
+                        print(f"账号【{i+1}】错误未知:{task}第{j+1}次 {result}")
                         break
             else:
                 result = ss.post(domain+ f"?i=2&t=0&v=1&from=wxapp&c=entry&a=wxapp&do=uptaskinfo&&token={token}", headers=headers, data=data).json()
