@@ -55,7 +55,7 @@ def do_read(i,ck):
         token = result['data']['token']
         task_list = {
             "看广告领矿石":{"id":"35","answer": ""},
-            "进群密码":{"id":"26","answer": "225588"},
+            "进群密码":{"id":"26","answer": "669988"},
             "每日答题":{"id":"30","answer": "普通物品不可分解"}
         }
         for task in task_list:
