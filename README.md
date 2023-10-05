@@ -5,50 +5,7 @@
 
 #### 特此感谢[@zh-h](https://github.com/zh-h) 大佬的开源项目:[https://github.com/zh-h/Windows.Media.Ocr.Cli](https://github.com/zh-h/Windows.Media.Ocr.Cli)
 > #### `Wxpusher`推送使用示例(请先用此demo进行测试):
-
-   	import requests
-	import time
-	from urllib.parse import quote
- 
-	# 授权设备LID(软件版本>=1.3.3)
-	imei = "XXXX" # 没有LID请填写imei = None
-	UID = "UID_XXXX"
-	
-	def check_status(key,link,index):
-	    ss = requests.session()
-	    if ss.get("https://linxi-send.run.goorm.app").status_code ==200:
-	        callback = "https://linxi-send.run.goorm.app"
-	    else:
-	        callback = "https://auth.linxi.tk"
-	    if imei != None:
-	        result = ss.post(callback+"/create_task",json={"imei":imei}).json()
-	        uuid = result['uuid']
-	        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
-	        time.sleep(index*2)
-	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-测试阅读%0A请在60秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
-	        for i in range(10):
-	            result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
-	            if result['code'] == 200:
-	                print(f"账号【{str(index+1)}】服务器回调结果:{result['msg']}")
-	                result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
-	                print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
-	                return True
-	            time.sleep(4)
-	        result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
-	        print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
-	        return False
-	    else:
-	        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-	        time.sleep(index*2)
-	        result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-测试阅读%0A请在40秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-	        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
-	        #print(f"手动微信阅读链接: {link}")
-	        time.sleep(30)
-	        return True
-	
-	check = check_status(UID,"http://baidu.com",1)
-	print(check)
+	python wxsend.py
 > #### `Wxpusher自动检测助手`使用示例:
 > Wxpusher助手-使用说明.docx
 <img src="zsm.png" alt="打赏" width="300px" height="300px"/>
