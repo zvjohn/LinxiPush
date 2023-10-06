@@ -29,7 +29,7 @@ headers = {
 def user_info(i,ck):
     headers['X-Dts-Token'] = ck['ck']
     result = ss.get(domain+"/user/getUserIntegral",headers=headers).json()
-    if result['errno'] == 0:
+    if result['errno'] == 0  and result['data']['list'] !=[]:
         print(f"账号【{i+1}】用户:{result['data']['list'][0]['userName']} 积分:{result['data']['integer']}")
     else:
         print(f"账号【{i+1}】获取用户信息失败!")
