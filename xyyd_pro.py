@@ -5,6 +5,10 @@
 # 添加账号说明(青龙/本地)二选一
 #   青龙: 青龙变量xyytoken 值{"ck":"ysm_uid的值","ts":"Wxpusher的UID"} 一行一个(回车分割)
 #   本地: 脚本内置ck方法ck_token = [{"ck":"ysm_uid的值","ts":"Wxpusher的UID"},{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}]
+# 提现说明:
+#   可选参数 支付宝账号zfbzh 支付宝姓名zfbxm
+#   微信提现(默认):{"ck":"ysm_uid的值","ts":"Wxpusher的UID"}
+#   支付宝提现:{"ck":"ysm_uid的值","ts":"Wxpusher的UID","zfbzh":"110","zfbxm":"局子"}
 # 脚本使用说明:
 #   1.(必须操作)扫码关注wxpusher获取UID: https://wxpusher.zjiecode.com/demo/
 #   2.在1打开的网页中点击发送文本消息,查看是否收到,收到可继续
@@ -83,6 +87,7 @@ def user_info(i,ck):
 
 # 阅读文章模块
 def do_read(i,ck):
+    time.sleep(i*5)
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
         'Cookie':f"ysmuid={ck['ck']}",
@@ -202,9 +207,14 @@ def get_money(i,ck):
                 # print(f'账号【{i+1}】金币转换金额{t_result}')
                 money = int(money) - 3000
             if float(rmb) >= float(Limit):
-                j_data = {'unionid':unionid,'signid':request_id,'ua':1,'ptype':0,'paccount':'','pname':''}
-                j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
-                print(f"账号【{i+1}】余额满足{Limit}元体现结果: {j_result['msg']}")
+                if 'zfbzh' in ck:
+                    j_data = {'unionid':unionid,'signid':request_id,'ua':2,'ptype':1,'paccount':ck['zfbzh'],'pname':ck['zfbxm']}
+                    j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
+                    print(f"账号【{i+1}】余额满足{Limit}元支付宝体现结果: {j_result['msg']}")
+                else:
+                    j_data = {'unionid':unionid,'signid':request_id,'ua':2,'ptype':0,'paccount':'','pname':''}
+                    j_result = ss.post(f'{domain}/yunonline/v1/withdraw',data=j_data).json()
+                    print(f"账号【{i+1}】余额满足{Limit}元微信体现结果: {j_result['msg']}")
             else:
                 print(f"账号【{i+1}】余额小于{Limit}元暂不提现! 当前金币: {money} 当前余额:{rmb}")
            
@@ -218,10 +228,11 @@ def check_status(key,link,index):
             callback = "https://auth.linxi.tk"
         result = ss.post(callback+"/create_task",json={"imei":imei}).json()
         uuid = result['uuid']
-        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
-        time.sleep(index*2)
+        msg = result['msg']
+        # print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        print(f"账号【{str(index+1)}】微信消息推送[{msg}]: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
             if result['code'] == 200:
@@ -229,17 +240,17 @@ def check_status(key,link,index):
                 result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
                 print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
                 return True
-            time.sleep(4)
+            time.sleep(tsleep/10)
         result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
         print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
         return False
     else:
-        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-        time.sleep(index*2)
+        # print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
-        time.sleep(30)
+        time.sleep(tsleep)
         return True
 
 if __name__ == "__main__":
