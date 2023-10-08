@@ -20,7 +20,9 @@ from multiprocessing import Pool
 Btype = "青龙"
 # 抽鞋盒开关
 Limit = True
-# 小啄阅读域名(无法使用时请更换)
+# 积分限制抽奖(大于等于该值才抽奖)
+Jifen = 199
+# 域名(无法使用时请更换)
 domain = 'https://www.57box.cn/app/index.php'
 # 保持连接,重复利用
 ss = requests.session()
@@ -55,7 +57,7 @@ def do_read(i,ck):
         token = result['data']['token']
         task_list = {
             "看广告领矿石":{"id":"35","answer": ""},
-            "进群密码":{"id":"26","answer": "669988"},
+            "进群密码":{"id":"26","answer": "225588"},
             "每日答题":{"id":"30","answer": "普通物品不可分解"}
         }
         for task in task_list:
@@ -82,7 +84,11 @@ def do_read(i,ck):
                 else:
                     print(f"账号【{i+1}】错误未知:{task} {result}")
             time.sleep(3)
-        if Limit:
+        data = {"m": "greatriver_lottery_operation","title": "",}
+        result = requests.post(domain+f"?i=2&t=0&v=1&from=wxapp&c=entry&a=wxapp&do=getuserinfo&&token={token}", headers=headers, data=data).json()
+        if result['errno'] == 0:
+            ks = int(float(result['data']['integral']))
+        if Limit and ks >= Jifen:
             params = {
                 "i": "2","t": "0","v": "1","from": "wxapp","c": "entry",
                 "a": "wxapp","do": "openthebox","token": token,
@@ -99,7 +105,22 @@ def do_read(i,ck):
             else:
                 print(f"账号【{i+1}】错误未知:开鞋盒 {result}")
         else:
-            print(f"账号【{i+1}】开鞋盒: 此功能未启用!")
+            print(f"账号【{i+1}】开鞋盒: 此功能未启用或积分未达到({Jifen})限额,暂不抽奖!")
+    elif result['errno'] == 999:
+        print(f"账号【{i+1}】登陆错误:{result['message']}")
+    else:
+        print(f"账号【{i+1}】错误未知:{result}")
+
+def warehouse(i,ck):
+    data = {"mobile": ck['mobile'], "password": ck['password'], "password2": "","code": "","invite_uid": "0","source": "app"}
+    result = requests.post(domain+"?i=2&t=0&v=1&from=wxapp&c=entry&a=wxapp&do=login&m=greatriver_lottery_operation", headers=headers, data=data).json()
+    if result['errno'] == 0:
+        token = result['data']['token']
+        result = requests.get(domain+ f"?i=2&t=0&v=1&from=wxapp&c=entry&a=wxapp&do=getmemberprizes&&m=greatriver_lottery_operation&page=0&type=1&prize_level=1&token={token}", headers=headers).json()
+        lipin = ""
+        for l in result['data']:
+            lipin += l['prize']['complete_prize_title'] + " "+l['prize']['prize_fragment']['prizes_fragments_recovery_price'] +"x"+l['prize']['prize_market_price']
+        print(f"账号【{i+1}】仓库数据:{lipin}")
     elif result['errno'] == 999:
         print(f"账号【{i+1}】登陆错误:{result['message']}")
     else:
@@ -139,6 +160,8 @@ if __name__ == "__main__":
         pool.starmap(do_read, list(enumerate(ck_token)))
         print("==================获取账号信息=================")
         pool.starmap(user_info, list(enumerate(ck_token)))
+        print("==================获取仓库数据=================")
+        pool.starmap(warehouse, list(enumerate(ck_token)))
 
 
         # 关闭进程池
