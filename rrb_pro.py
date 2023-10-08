@@ -196,7 +196,7 @@ def check_status(key,link,index):
                 result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
                 print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
                 return True
-            time.sleep(4)
+            time.sleep(tsleep/10)
         result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
         print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
         return False
@@ -206,7 +206,7 @@ def check_status(key,link,index):
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
-        time.sleep(30)
+        time.sleep(tsleep)
         return True
 
 
