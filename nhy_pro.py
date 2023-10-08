@@ -26,8 +26,6 @@ domain = "http://wap.nonghaoyou.cn"
 ss = requests.session()
 headers = {
     "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.39 (0x18002733) NetType/WIFI Language/zh_CN",
-    "Referer": "",
-    "Origin": "",
     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
 }
 
