@@ -68,6 +68,7 @@ def user_info(i,ck):
 
 
 def do_read(i,ck):
+    time.sleep(i*5)
     try:
         headers['un'] = ck['un']
         headers['uid'] = ck['uid']
@@ -183,10 +184,11 @@ def check_status(key,link,index):
             callback = "https://auth.linxi.tk"
         result = ss.post(callback+"/create_task",json={"imei":imei}).json()
         uuid = result['uuid']
-        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
-        time.sleep(index*2)
+        msg = result['msg']
+        # print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        print(f"账号【{str(index+1)}】微信消息推送[{msg}]: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
             if result['code'] == 200:
@@ -199,8 +201,8 @@ def check_status(key,link,index):
         print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
         return False
     else:
-        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-        time.sleep(index*2)
+        # print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
