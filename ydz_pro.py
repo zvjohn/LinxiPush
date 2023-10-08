@@ -41,13 +41,13 @@ domain = "http://wxr.jjyii.com"
 ss = requests.session()
 # 检测文章列表(如有未收录可自行添加)
 check_list = [
-    # 自行添加,TG内部群公布汇总
+   "不公开biz"
 ]
 
 # 获取个人信息模块
 def user_info(i,ck):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.39 (0x18002733) NetType/WIFI Language/zh_CN',
         'a_h_n': f'http%3A%2F%2F5851577307.gbvbmxo.cn%2F%3Fgoid%3Ditrb/{ck["ck"]}' 
     }
     result = requests.post(domain+"/user/getinfo?v=3",headers=headers).json()
@@ -59,8 +59,9 @@ def user_info(i,ck):
 
 # 阅读文章模块
 def do_read(i,ck):
+    time.sleep(i*5)
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.39 (0x18002733) NetType/WIFI Language/zh_CN',
         'a_h_n': f'http%3A%2F%2F5851577307.gbvbmxo.cn%2F%3Fgoid%3Ditrb/{ck["ck"]}' 
     }
     result = requests.post(domain+"/user/getinfo?v=3",headers=headers).json()
@@ -71,18 +72,22 @@ def do_read(i,ck):
         return False
     headers = {
         "Content-Length": "82",
-        "a_h_n": f"http%3A%2F%2F5851750682.qekzkqt.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D3890/{ck['ck']}",
+        "a_h_n": f"http%3A%2F%2F58517e4ddf7.wejjvni.cn%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D3890/{ck['ck']}",
         # 这里的UA
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10; SEA-AL10 Build/HUAWEISEA-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4313 MMWEBSDK/20220805 Mobile Safari/537.36 MMWEBID/9538 MicroMessenger/8.0.27.2220(0x28001B53) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "http://5851750682.qekzkqt.cn",
-        "Referer": "http://5851750682.qekzkqt.cn/",
+        "Origin": "http://58517e4ddf7.wejjvni.cn",
+        "Referer": "http://58517e4ddf7.wejjvni.cn/",
     }
     while True:
         data = f"o={quote(headers['Origin'])}%2F%3Fa%3Dgt%26goid%3Ditrb%26_v%3D3890&t=quick"
         result = requests.post(domain+"/r/get?v=10",headers=headers,data=data).json()
         if result['code'] == 2023:
             print(f"账号【{i+1}】获取文章失败:当前为二维码页面!")
+            host = re.findall(r'%2F%2F(.*?)%2F%3F', data)[0]
+            headers['Origin'] = "http://" +host
+            headers['Referer'] = f"http://{host}/"
+            continue
         if result['data']['url'] == None:
             if result['data']['uiv'] == 1:
                 print(f"账号【{i+1}】获取文章失败: 已黑号,请明天重试!")
@@ -111,7 +116,7 @@ def do_read(i,ck):
                 if biz in check_list:
                     print(f"账号【{i+1}】检测到已收录BIZ[{biz}]")
                 else:
-                    print(f"账号【{i+1}】检测到未收录BIZ[{biz}]请自动添加")
+                    print(f"账号【{i+1}】检测到未收录BIZ[{biz}]请发送到内部群(黑号前两个,没黑前一个)")
                 print(f"账号【{i+1}】阅读检测文章-已推送微信,请40s内完成验证!")
                 check = check_status(ck['ts'],result['data']['url'],i)
                 if check:
@@ -139,7 +144,7 @@ def do_read(i,ck):
 # 提现模块
 def get_money(i,ck):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.39 (0x18002733) NetType/WIFI Language/zh_CN',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Referer': 'http://5851751251.fjxsjjw.cn/',
         'Origin': 'http://5851751251.fjxsjjw.cn',
@@ -169,10 +174,11 @@ def check_status(key,link,index):
             callback = "https://auth.linxi.tk"
         result = ss.post(callback+"/create_task",json={"imei":imei}).json()
         uuid = result['uuid']
-        print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
-        time.sleep(index*2)
+        msg = result['msg']
+        # print(f"账号【{str(index+1)}】避免并发,本次延迟{index*2}秒,上传服务器[{result['msg']}]")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
-        print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
+        print(f"账号【{str(index+1)}】微信消息推送[{msg}]: {result['msg']},等待40s完成验证!")
         for i in range(10):
             result = ss.get(callback+f"/select_task/{imei}/{uuid}").json()
             if result['code'] == 200:
@@ -180,17 +186,17 @@ def check_status(key,link,index):
                 result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
                 print(f"账号【{str(index+1)}】查询本次uuid结果:{result['msg']}")
                 return True
-            time.sleep(4)
+            time.sleep(tsleep/10)
         result = ss.get(callback+f"/delete_task/{imei}/{uuid}").json()
         print(f"账号【{str(index+1)}】清除本次uuid结果:{result['msg']}")
         return False
     else:
-        print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
-        time.sleep(index*2)
+        # print(f"账号【{str(index+1)}】避免并发同一时间多个推送,本次推送延迟{index*2}秒")
+        # time.sleep(index*2)
         result = ss.get(f'https://wxpusher.zjiecode.com/demo/send/custom/{key}?content=检测文章-{name}%0A请在{tsleep}秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27{quote(link)}%27%22%3E').json()
         print(f"账号【{str(index+1)}】微信消息推送: {result['msg']},等待40s完成验证!")
         #print(f"手动微信阅读链接: {link}")
-        time.sleep(30)
+        time.sleep(tsleep)
         return True
 
 
