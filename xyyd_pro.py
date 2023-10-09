@@ -50,7 +50,7 @@ check_list = [
 ]
 # 时间戳
 def ts ():
-    return str (int (time .time ()))+'000'
+    return str(int(time.time() * 1000))
 
 # 获取个人信息模块
 def user_info(i,ck):
@@ -66,7 +66,7 @@ def user_info(i,ck):
         return False
     else:
         unionid = re.findall(r'unionid="(.*?)";',result)[0]
-        result = ss.get(f'{domain}/yunonline/v1/sign_info?time={ts()}000&unionid={unionid}').json()
+        result = ss.get(f'{domain}/yunonline/v1/sign_info?time={ts()}&unionid={unionid}').json()
         if result['errcode'] == 0:
             pass
         else:
@@ -78,7 +78,7 @@ def user_info(i,ck):
         else:
             print (f'账号【{i+1}】获取用户信息失败，账号异常:{result}')
             return False
-        result = ss.get(f'{domain}/yunonline/v1/gold?unionid={unionid}&time={ts()}000').json()
+        result = ss.get(f'{domain}/yunonline/v1/gold?unionid={unionid}&time={ts()}').json()
         if result['errcode'] == 0:
             print(f"账号【{i+1}】今日积分: {result['data']['day_gold']} 已阅读: {result['data']['day_read']}篇 剩余: {result['data']['remain_read']}篇")
         else:
@@ -108,8 +108,8 @@ def do_read(i,ck):
     data = {'unionid':unionid}
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-        'Cookie':f"ysmuid={ck['ck']}",
-
+        'Cookie':f"ysmuid={ck['ck']}; ejectCode=1",
+        'Referer': 'http://1693441346.pgvv.top/',
     }
     result = ss.post(f'{domain}/yunonline/v1/wtmpdomain',json=data).json()
     uk = re.findall(r'uk=([^&]+)',result['data']['domain'])[0]
@@ -117,8 +117,7 @@ def do_read(i,ck):
     print(f"账号【{i+1}】获取到KEY: {uk}")
     while True:
             temp_headers = {
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 12; Redmi K30 Pro Build/SKQ1.220303.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5279 MMWEBSDK/20230805 MMWEBID/3850 MicroMessenger/8.0.41.2441(0x28002951) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-                'x-requested-with': 'com.tencent.mm',
+                'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN",
                 'Origin': host,
             }
             result = ss.get(f'https://nsr.zsf2023e458.cloud/yunonline/v1/do_read?uk={uk}',headers=temp_headers)
@@ -129,13 +128,28 @@ def do_read(i,ck):
                 result = result.json()
             if result['errcode'] == 0:
                 link = result['data']['link']
-                l_result = ss.get(link,headers=headers).text
+                link_headers = {
+                    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40(0x18002831) NetType/WIFI Language/zh_CN",
+                    'Cookie': f'ysmuid={ck["ck"]}; ejectCode=1'
+                }
+                l_result = ss.get(link,headers=link_headers).text
                 # 获取biz
                 biz = re.findall("biz=(.*?)&amp;",l_result)
                 if biz == []:
-                    print(f'账号【{i+1}】未找到BIZ,重新获取')
-                    print(link)
-                    continue
+                    print(f'账号【{i+1}】未找到BIZ,待老夫找找看')
+                    pattern = r'<meta\s+property="og:url"\s+content="([^"]+)"\s*/>'
+                    matches = re.search(pattern, l_result)
+                    if matches:
+                        fixed_url = matches.group(1)
+                        og_url = fixed_url.replace("amp;", "")
+                        biz = og_url.split('__biz=')[1].split('&')[0]
+                    else:
+                        biz = re.findall("biz=(.*?)&",link)
+                        if biz == []:
+                            print(f'账号【{i+1}】未找到BIZ,老夫也没找到')
+                            continue
+                        else:
+                            biz = biz[0]
                 else:
                     biz = biz[0]
                 s = random.randint(6,8)
