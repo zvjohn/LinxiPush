@@ -7,6 +7,8 @@
 #   本地: 脚本内置ck方法ck_token = [{"mobile":"110","password":"120"},{"mobile":"110","password":"120"}]
 # 软件版本
 version = "0.0.1"
+
+const $ = new Env('57Box');
 name = "57Box"
 linxi_token = "boxtoken"
 linxi_tips = '{"mobile":"110","password":"120"}'
